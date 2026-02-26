@@ -1,36 +1,87 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Cryptship.com
 
-## Getting Started
+**Shipping users to the blockchain — safely and confidently.**
 
-First, run the development server:
+Guided onboarding voyages for SOL, ETH, and BTC. Build wallet fundamentals, learn how to read the network, and move safely.
+
+## Quick Start
 
 ```bash
+# 1. Install dependencies
+npm install
+
+# 2. Set up environment
+cp .env.example .env.local
+# Edit .env.local with your values (defaults work for dev)
+
+# 3. Run development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+# 4. Open http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Tech Stack
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+- **Next.js 14** (App Router) — routing, SSR, API routes
+- **React 18** — UI components
+- **Chart.js** — price charts
+- **SQLite** (better-sqlite3) — auth & progress persistence
+- **bcryptjs** — password hashing
+- **jsonwebtoken** — JWT session tokens
+- **Vanilla CSS** — ocean-themed design system
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Environment Variables
 
-## Learn More
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `JWT_SECRET` | `cryptship-dev-secret-...` | Secret for JWT signing |
+| `DATABASE_PATH` | `./cryptship.db` | Path to SQLite database |
+| `COINGECKO_BASE_URL` | `https://api.coingecko.com/api/v3` | CoinGecko API base URL |
 
-To learn more about Next.js, take a look at the following resources:
+## Features
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Market data** — live prices for BTC, ETH, SOL with 60s polling
+  - *Dev test:* `curl http://localhost:3000/api/market-snapshot`
+- **Price charts** — 24H / 7D / 30D / 1Y toggleable line charts
+- **Quick analytics** — chain-specific metrics (gas, fees, mempool)
+- **Onboarding voyages** — 8 waypoints per chain with scrollspy rail
+- **Auth** — email + password registration and login
+- **Progress tracking** — persisted per chain, per waypoint
+- **Responsive** — mobile-first design
+- **Ocean theme** — animated gradient background, wave effects
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Project Structure
 
-## Deploy on Vercel
+```
+app/                    # Next.js App Router pages
+├── api/                # API routes (market, auth, progress)
+├── sol/eth/btc/        # Chain pages
+├── signin/             # Auth page
+├── disclaimer/         # Legal page
+components/             # React components
+context/                # Auth context
+data/                   # Config, waypoints, headlines
+lib/                    # Database setup
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Deployment
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Build for production:
+```bash
+npm run build
+npm start
+```
+
+> **Note:** `better-sqlite3` requires native compilation. For serverless platforms, consider switching to a cloud database.
+
+## Deploy to Vercel
+
+The easiest way to deploy your Next.js app is to use the Vercel Platform.
+
+1. **Import your GitHub repo into Vercel.**
+2. **Set environment variables from `.env.example`** in the Vercel dashboard.
+3. **Deploy** your project.
+
+## License
+
+Educational project. Not financial advice.
