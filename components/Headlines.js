@@ -17,7 +17,7 @@ export default function Headlines() {
     if (loading) {
         return (
             <section className="section">
-                <h2 className="section-title"><span className="icon">◈</span> Today in Crypto</h2>
+                <h2 className="section-title"><span className="icon">◈</span> Top Headlines</h2>
                 <div className="loading-shimmer skeleton" style={{ height: '200px' }} />
             </section>
         );
@@ -28,20 +28,8 @@ export default function Headlines() {
     return (
         <section className="section">
             <h2 className="section-title">
-                <span className="icon">◈</span> Today in Crypto
+                <span className="icon">◈</span> Top Headlines
             </h2>
-
-            {data.bullets && (
-                <ul className="headlines-bullets">
-                    {data.bullets.map((bullet, i) => (
-                        <li key={i}>{bullet}</li>
-                    ))}
-                </ul>
-            )}
-
-            <h3 className="section-title" style={{ fontSize: '1.15rem', marginTop: '1.5rem' }}>
-                Top Headlines
-            </h3>
             <div>
                 {data.headlines.map((item) => (
                     <div key={item.id} className="headline-item">

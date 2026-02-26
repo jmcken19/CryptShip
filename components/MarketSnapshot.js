@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import AnimatedValue from './AnimatedValue';
 
 function formatPrice(price) {
     if (price >= 1000) return '$' + price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -60,11 +61,20 @@ export default function MarketSnapshot() {
                 <h2 className="section-title" style={{ marginBottom: 0 }}>
                     <span className="icon">◈</span> Market Snapshot
                 </h2>
-                {errorMsg && !data && (
+                {errorMsg && !data ? (
                     <span style={{ fontSize: '0.8rem', color: 'var(--coral-400)' }}>
                         {errorMsg}
                     </span>
+                ) : data?.providerUsed && (
+                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                        Source: {data.providerUsed}
+                    </span>
                 )}
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginTop: '0.5rem', marginBottom: '1rem', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                <span>ℹ️</span>
+                <span>Prices update periodically and may not reflect real-time market movements.</span>
             </div>
 
             {errorMsg && data && (
@@ -94,7 +104,7 @@ export default function MarketSnapshot() {
                             ) : (
                                 <>
                                     <div className="market-tile-price">
-                                        {d ? formatPrice(d.price) : '—'}
+                                        <AnimatedValue value={d ? d.price : null} formatter={d ? formatPrice : () => '—'} />
                                     </div>
                                     <div className="market-tile-changes">
                                         <span>

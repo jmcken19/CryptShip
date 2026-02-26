@@ -42,6 +42,7 @@ npm run dev
 
 - **Market data** — live prices for BTC, ETH, SOL with 60s polling
   - *Dev test:* `curl http://localhost:3000/api/market-snapshot`
+  - *Dev test:* `curl http://localhost:3000/api/news?scope=global`
 - **Price charts** — 24H / 7D / 30D / 1Y toggleable line charts
 - **Quick analytics** — chain-specific metrics (gas, fees, mempool)
 - **Onboarding voyages** — 8 waypoints per chain with scrollspy rail

@@ -6,6 +6,7 @@ import PriceChart from '@/components/PriceChart';
 import QuickAnalytics from '@/components/QuickAnalytics';
 import ChainHeadlines from '@/components/ChainHeadlines';
 import VoyageRail from '@/components/VoyageRail';
+import AnimatedValue from '@/components/AnimatedValue';
 import { useState, useEffect } from 'react';
 
 function formatPrice(price) {
@@ -42,7 +43,7 @@ export default function ChainPage({ chainId }) {
 
                 <div className="chain-price-block" style={{ marginTop: '1.5rem' }}>
                     <span className="chain-price">
-                        {marketData ? formatPrice(marketData.price) : '—'}
+                        <AnimatedValue value={marketData ? marketData.price : null} formatter={marketData ? formatPrice : () => '—'} />
                     </span>
                     <div className="chain-price-changes">
                         <span className={`chain-price-change ${marketData?.change24h >= 0 ? 'change-positive' : 'change-negative'}`}>
@@ -52,6 +53,11 @@ export default function ChainPage({ chainId }) {
                             <small>7d</small> {marketData ? formatChange(marketData.change7d) : '—'}
                         </span>
                     </div>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginTop: '0.75rem', marginBottom: '1.5rem', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                    <span>ℹ️</span>
+                    <span>Prices update periodically and may not reflect real-time market movements.</span>
                 </div>
 
                 <PriceChart coin={chainId} color={chain.color} />

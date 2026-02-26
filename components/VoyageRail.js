@@ -1,35 +1,37 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
 
 export default function VoyageRail({ chain, waypoints }) {
-    const { user } = useAuth();
     const [completedWaypoints, setCompletedWaypoints] = useState({});
     const [activeWaypoint, setActiveWaypoint] = useState(1);
     const [toastMsg, setToastMsg] = useState('');
     const waypointRefs = useRef({});
     const railRef = useRef(null);
 
-    // Load progress
+    // Provide a helper to load safely
+    const loadProgress = useCallback(() => {
+        try {
+            const raw = localStorage.getItem(`cryptship_progress_${chain}`);
+            if (raw) {
+                const parsed = JSON.parse(raw);
+                if (parsed && Array.isArray(parsed.completed)) {
+                    // Convert array [1,2] to object {1: true, 2: true} for easier component logic
+                    const mapped = {};
+                    parsed.completed.forEach(id => { mapped[id] = true; });
+                    setCompletedWaypoints(mapped);
+                    return;
+                }
+            }
+        } catch { }
+        setCompletedWaypoints({});
+    }, [chain]);
+
+    // Load progress on mount
     useEffect(() => {
-        if (user) {
-            fetch('/api/progress')
-                .then(r => r.ok ? r.json() : null)
-                .then(data => {
-                    if (data && data[chain]) {
-                        setCompletedWaypoints(data[chain]);
-                    }
-                })
-                .catch(() => { });
-        } else {
-            try {
-                const local = JSON.parse(localStorage.getItem(`cryptship_progress_${chain}`) || '{}');
-                setCompletedWaypoints(local);
-            } catch { }
-        }
-    }, [user, chain]);
+        loadProgress();
+    }, [loadProgress]);
 
     // ScrollSpy
     useEffect(() => {
@@ -68,35 +70,24 @@ export default function VoyageRail({ chain, waypoints }) {
         }
     }, []);
 
-    const handleCheckbox = useCallback(async (waypointId, checked) => {
-        const updated = { ...completedWaypoints, [waypointId]: checked };
+    const handleCheckbox = useCallback((waypointId, checked) => {
+        const updatedObj = { ...completedWaypoints, [waypointId]: checked };
 
-        if (user) {
-            try {
-                const res = await fetch('/api/progress', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ chain, waypoint: waypointId, completed: checked }),
-                });
-                if (!res.ok) {
-                    setToastMsg('Failed to save progress. Please try again.');
-                    return; // Don't advance or update state
-                }
-            } catch (e) {
-                setToastMsg('Failed to save progress. Check your connection.');
-                return;
-            }
-        } else {
-            try {
-                localStorage.setItem(`cryptship_progress_${chain}`, JSON.stringify(updated));
-            } catch {
-                setToastMsg('Failed to save progress locally.');
-                return;
-            }
+        // Save to LocalStorage in user-requested format
+        try {
+            const completedArr = Object.keys(updatedObj).filter(k => updatedObj[k]).map(Number);
+            const savePayload = {
+                completed: completedArr,
+                updatedAt: new Date().toISOString()
+            };
+            localStorage.setItem(`cryptship_progress_${chain}`, JSON.stringify(savePayload));
+        } catch {
+            setToastMsg('Failed to save progress offline. Note: Private mode limits saving.');
+            return;
         }
 
         // Save succeeded — update state
-        setCompletedWaypoints(updated);
+        setCompletedWaypoints(updatedObj);
 
         // Auto-advance to next waypoint on completion
         if (checked) {
@@ -108,10 +99,11 @@ export default function VoyageRail({ chain, waypoints }) {
                 }, 350); // Small delay for visual feedback
             }
         }
-    }, [completedWaypoints, user, chain, waypoints, scrollToWaypoint]);
+    }, [completedWaypoints, chain, waypoints, scrollToWaypoint]);
 
     // Calculate ship position
     const shipTop = `${(activeWaypoint - 1) * (100 / (waypoints.length - 1 || 1))}%`;
+    const isFullyComplete = Object.values(completedWaypoints).filter(Boolean).length === waypoints.length;
 
     return (
         <div className="voyage-layout">
@@ -176,8 +168,8 @@ export default function VoyageRail({ chain, waypoints }) {
                             {wp.actionLink && (
                                 <>
                                     {' — '}
-                                    <a href={wp.actionLink} target="_blank" rel="noopener noreferrer">
-                                        {wp.actionLink.replace('https://', '').replace('www.', '')}
+                                    <a href={wp.actionLink} target="_blank" rel="noopener noreferrer" style={{ wordBreak: 'break-all' }}>
+                                        {wp.actionLink.includes('coinbase.com/join') ? 'coinbase.com/join' : wp.actionLink.replace('https://', '').replace('www.', '')}
                                     </a>
                                 </>
                             )}
@@ -191,14 +183,21 @@ export default function VoyageRail({ chain, waypoints }) {
                             />
                             <span className="waypoint-checkbox-label">{wp.checkbox}</span>
                         </label>
-
-                        {!user && completedWaypoints[wp.id] && (
-                            <div className="sign-in-prompt">
-                                <Link href="/signin">Sign in</Link> to save your progress across devices.
-                            </div>
-                        )}
                     </div>
                 ))}
+
+                {isFullyComplete && (
+                    <div className="card waypoint-card active" style={{ textAlign: 'center', borderColor: 'var(--teal-400)', marginTop: '2rem' }}>
+                        <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🎉</div>
+                        <h3 className="waypoint-title" style={{ color: 'var(--teal-400)', marginBottom: '0.5rem' }}>Voyage Complete!</h3>
+                        <p className="text-muted" style={{ marginBottom: '1.5rem' }}>
+                            You've successfully completed your {chain.toUpperCase()} onboarding.
+                        </p>
+                        <Link href="/" className="btn btn-primary">
+                            Return to Home
+                        </Link>
+                    </div>
+                )}
             </div>
         </div>
     );

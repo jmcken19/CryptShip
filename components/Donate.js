@@ -38,11 +38,11 @@ export default function Donate() {
                         <div className="donate-chain" style={{ color: d.color }}>
                             {d.chain}
                         </div>
-                        <div className="donate-qr-placeholder" style={{ padding: 0, overflow: 'hidden', border: `2px solid ${d.color}33`, background: 'white' }}>
+                        <div className="donate-qr-placeholder" style={{ padding: '0.5rem', overflow: 'hidden', border: `2px solid ${d.color}33`, background: 'white', width: '180px', height: '180px', margin: '0 auto 1rem auto' }}>
                             <img
-                                src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${d.address}&color=0f2035`}
+                                src={`/qr/${d.chain.toLowerCase()}.png`}
                                 alt={`${d.chain} QR Code`}
-                                style={{ width: '100%', height: '100%', display: 'block' }}
+                                style={{ width: '100%', height: '100%', display: 'block', objectFit: 'contain' }}
                             />
                         </div>
                         <div className="donate-address">{truncateAddress(d.address)}</div>

@@ -1,21 +1,29 @@
 'use client';
 
 import Link from 'next/link';
-import { useAuth } from '@/context/AuthContext';
 import { useState, useEffect } from 'react';
 
 export default function VoyageCTA() {
-    const { user } = useAuth();
     const [progress, setProgress] = useState(null);
 
     useEffect(() => {
-        if (user) {
-            fetch('/api/progress')
-                .then(r => r.ok ? r.json() : null)
-                .then(data => setProgress(data))
-                .catch(() => { });
-        }
-    }, [user]);
+        // Read progress from localStorage for each active chain
+        const localProgress = {};
+        const chains = ['sol', 'eth', 'btc'];
+
+        chains.forEach(c => {
+            try {
+                const stored = localStorage.getItem(`cryptship_progress_${c}`);
+                if (stored) {
+                    localProgress[c] = JSON.parse(stored);
+                }
+            } catch (e) {
+                console.error('Failed to parse localStorage for', c, e);
+            }
+        });
+
+        setProgress(localProgress);
+    }, []);
 
     const chains = [
         { id: 'sol', name: 'Solana', symbol: 'SOL', color: '#9945FF' },
@@ -26,21 +34,23 @@ export default function VoyageCTA() {
     const TOTAL_WAYPOINTS = 6;
 
     function getChainProgress(chainId) {
-        if (!progress || !progress[chainId]) return { completed: 0, total: TOTAL_WAYPOINTS, nextWaypoint: 1 };
-        const entries = progress[chainId];
-        let completed = 0;
+        if (!progress || !progress[chainId] || !Array.isArray(progress[chainId].completed)) {
+            return { completed: 0, total: TOTAL_WAYPOINTS, nextWaypoint: 1 };
+        }
+
+        const completedArr = progress[chainId].completed;
+        let completed = completedArr.length;
+        if (completed > TOTAL_WAYPOINTS) completed = TOTAL_WAYPOINTS;
+
+        // Find next lowest missing waypoint
         let nextWaypoint = 1;
         for (let i = 1; i <= TOTAL_WAYPOINTS; i++) {
-            if (entries[i]) {
-                completed++;
-            }
-        }
-        for (let i = 1; i <= TOTAL_WAYPOINTS; i++) {
-            if (!entries[i]) {
+            if (!completedArr.includes(i)) {
                 nextWaypoint = i;
                 break;
             }
         }
+
         if (completed === TOTAL_WAYPOINTS) nextWaypoint = TOTAL_WAYPOINTS;
         return { completed, total: TOTAL_WAYPOINTS, nextWaypoint };
     }
@@ -55,7 +65,8 @@ export default function VoyageCTA() {
                 {chains.map((chain) => {
                     const p = getChainProgress(chain.id);
                     const pct = Math.round((p.completed / p.total) * 100);
-                    const hasProgress = user && progress && p.completed > 0;
+                    const hasProgress = progress && progress[chain.id] && p.completed > 0;
+                    const isFullyComplete = p.completed === p.total;
 
                     return (
                         <div key={chain.id} className="card voyage-cta-card">
@@ -66,22 +77,25 @@ export default function VoyageCTA() {
                             {hasProgress && (
                                 <>
                                     <div className="voyage-progress-bar">
-                                        <div className="voyage-progress-fill" style={{ width: `${pct}%` }} />
+                                        <div className="voyage-progress-fill" style={{ width: `${pct}%`, backgroundColor: isFullyComplete ? 'var(--teal-400)' : 'var(--blue-400)' }} />
                                     </div>
                                     <div className="voyage-progress-text">
-                                        {p.completed}/{p.total} waypoints · {pct}% complete
+                                        {p.completed}/{p.total} waypoints · {pct}% complete {isFullyComplete && '✅'}
                                     </div>
                                 </>
                             )}
 
                             <Link
                                 href={`/${chain.id}`}
-                                className="btn btn-primary"
+                                className={`btn ${isFullyComplete ? 'btn-outline' : 'btn-primary'}`}
                                 style={{ width: '100%' }}
                             >
-                                {hasProgress
-                                    ? `Continue from Waypoint ${p.nextWaypoint}`
-                                    : `Start ${chain.symbol} Voyage`}
+                                {!hasProgress
+                                    ? `Start ${chain.symbol} Voyage`
+                                    : isFullyComplete
+                                        ? `Review ${chain.symbol} Voyage`
+                                        : `Continue from Waypoint ${p.nextWaypoint}`
+                                }
                             </Link>
                         </div>
                     );

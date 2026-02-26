@@ -5,47 +5,64 @@ let cache = {
     timestamp: 0,
 };
 
-// Also track when we last failed, to avoid hammering API if it's down
 let lastErrorTime = 0;
-const ERROR_CACHE_DURATION = 10 * 1000; // 10 seconds
+const ERROR_CACHE_DURATION = 10 * 1000;      // 10 seconds
+const CACHE_DURATION = 60 * 1000;           // 60 seconds
 
-const CACHE_DURATION = 60 * 1000; // 60 seconds
+// Fetch Coinbase Spot Prices
+async function fetchCoinbasePrices() {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 3500);
 
-async function fetchMarketData() {
-    const now = Date.now();
+    try {
+        const [btc, eth, sol] = await Promise.all([
+            fetch('https://api.coinbase.com/v2/prices/BTC-USD/spot', { signal: controller.signal, cache: 'no-store' }).then(r => r.json()),
+            fetch('https://api.coinbase.com/v2/prices/ETH-USD/spot', { signal: controller.signal, cache: 'no-store' }).then(r => r.json()),
+            fetch('https://api.coinbase.com/v2/prices/SOL-USD/spot', { signal: controller.signal, cache: 'no-store' }).then(r => r.json()),
+        ]);
 
-    if (cache.data && (now - cache.timestamp) < CACHE_DURATION) {
-        console.log('[DEBUG market-snapshot] Serving from cache, age:', Math.round((now - cache.timestamp) / 1000), 's');
-        return cache.data;
+        if (!btc?.data?.amount || !eth?.data?.amount || !sol?.data?.amount) {
+            throw new Error('Invalid response from Coinbase API');
+        }
+
+        const nowIso = new Date().toISOString();
+
+        return {
+            btc: { price: Number(btc.data.amount), change24h: null, change7d: null, volume24h: null, lastUpdated: nowIso, mempoolLevel: 'Normal' },
+            eth: { price: Number(eth.data.amount), change24h: null, change7d: null, volume24h: null, lastUpdated: nowIso, gasIndicator: 'Medium' },
+            sol: { price: Number(sol.data.amount), change24h: null, change7d: null, volume24h: null, lastUpdated: nowIso, activity: 'High' }
+        };
+    } finally {
+        clearTimeout(timeout);
     }
+}
 
-    if (now - lastErrorTime < ERROR_CACHE_DURATION && !cache.data) {
-        throw new Error('API is temporarily down. Try again later.');
-    }
+// Fetch CoinGecko Detailed Prices (fallback)
+async function fetchCoinGeckoPrices() {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 4000);
 
     try {
         const baseUrl = process.env.COINGECKO_BASE_URL || 'https://api.coingecko.com/api/v3';
+        const apiKey = process.env.COINGECKO_API_KEY || process.env.MARKET_DATA_API_KEY || '';
+        const headers = { 'Accept': 'application/json' };
 
-        // Use /coins/markets for accurate 24h and 7d change data
+        if (apiKey) {
+            headers['x-cg-demo-api-key'] = apiKey;
+        }
+
         const res = await fetch(
             `${baseUrl}/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,solana&order=market_cap_desc&per_page=3&page=1&sparkline=false&price_change_percentage=24h,7d`,
-            {
-                headers: { 'Accept': 'application/json' },
-                cache: 'no-store',
-            }
+            { headers, cache: 'no-store', signal: controller.signal }
         );
 
         if (!res.ok) {
-            console.error('[DEBUG market-snapshot] CoinGecko API error:', res.status, res.statusText);
-            throw new Error(`API returned ${res.status}`);
+            throw new Error(`CoinGecko API returned ${res.status}`);
         }
 
         const coins = await res.json();
-        console.log('[DEBUG market-snapshot] Fresh fetch from CoinGecko /coins/markets at', new Date().toISOString());
-
-        // Validate basic structure
         if (!Array.isArray(coins) || coins.length === 0) {
-            throw new Error('Invalid data received from API');
+            throw new Error('Invalid data from CoinGecko');
         }
 
         const result = {};
@@ -65,42 +82,100 @@ async function fetchMarketData() {
             };
         }
 
-        // Add chain-specific simulated metrics for MVP
-        if (result.sol) {
-            result.sol.feeLevel = 'Low';
-            result.sol.feeLevelValue = '~0.000005 SOL';
-            result.sol.activity = 'High';
-        }
-        if (result.eth) {
-            result.eth.gasIndicator = 'Medium';
-            result.eth.gasValue = '~25 gwei';
-            result.eth.baseFee = 'Moderate';
-        }
-        if (result.btc) {
-            result.btc.feeRate = 'Low';
-            result.btc.feeRateValue = '~8 sat/vB';
-            result.btc.mempoolLevel = 'Normal';
+        if (result.sol) { result.sol.activity = 'High'; result.sol.feeLevel = 'Low'; }
+        if (result.eth) { result.eth.gasIndicator = 'Medium'; result.eth.baseFee = 'Moderate'; }
+        if (result.btc) { result.btc.mempoolLevel = 'Normal'; result.btc.feeRate = 'Low'; }
+
+        return result;
+    } finally {
+        clearTimeout(timeout);
+    }
+}
+
+async function fetchMarketData() {
+    const now = Date.now();
+
+    // 1. Check valid cache
+    if (cache.data && (now - cache.timestamp) < CACHE_DURATION) {
+        console.log('[DEBUG market-snapshot] Serving from cache (Provider:', cache.data.providerUsed, ') - Age:', Math.round((now - cache.timestamp) / 1000), 's');
+        return cache.data;
+    }
+
+    // 2. Prevent hammering if we repeatedly fail
+    if (now - lastErrorTime < ERROR_CACHE_DURATION && !cache.data) {
+        throw new Error('APIs temporarily down. Try again later.');
+    }
+
+    // 3. Try Primary (Coinbase) for precise spot prices
+    let prices = null;
+    let fallbackPrices = null;
+
+    try {
+        const coinbasePromise = fetchCoinbasePrices();
+        // Option 2: concurrently fetch CoinGecko for volume/change data 
+        const cgPromise = fetchCoinGeckoPrices().catch(e => null);
+
+        const [cbData, cgData] = await Promise.all([coinbasePromise, cgPromise]);
+        prices = cbData;
+
+        // Merge CoinGecko supplemental data if available safely
+        if (cgData) {
+            for (const key of ['btc', 'eth', 'sol']) {
+                if (prices[key] && cgData[key]) {
+                    prices[key].change24h = (cgData[key].change24h != null) ? Number(cgData[key].change24h) : null;
+                    prices[key].change7d = (cgData[key].change7d != null) ? Number(cgData[key].change7d) : null;
+                    prices[key].volume24h = (cgData[key].volume24h != null) ? Number(cgData[key].volume24h) : null;
+                    prices[key].marketCap = (cgData[key].marketCap != null) ? Number(cgData[key].marketCap) : null;
+                }
+            }
         }
 
-        cache.data = result;
+        prices.providerUsed = 'coinbase' + (cgData ? ' + coingecko' : '');
+        console.log(`[DEBUG market-snapshot] Primary fetch success (${prices.providerUsed}) at`, new Date().toISOString());
+
+        cache.data = prices;
         cache.timestamp = now;
-        return result;
-    } catch (error) {
-        lastErrorTime = Date.now();
-        console.error('[DEBUG market-snapshot] Fetch error:', error.message);
-        // If we have stale cache, serve it silently instead of failing hard.
-        if (cache.data) {
-            console.log('[DEBUG market-snapshot] Serving stale cached data due to error.');
-            return cache.data;
+        return prices;
+    } catch (primaryErr) {
+        console.error('[DEBUG market-snapshot] Primary provider (Coinbase) failed:', primaryErr.message);
+
+        // 4. Try Fallback completely (CoinGecko standalone)
+        try {
+            fallbackPrices = await fetchCoinGeckoPrices();
+
+            // Normalize mapping explicitly
+            for (const key of ['btc', 'eth', 'sol']) {
+                if (fallbackPrices[key]) {
+                    fallbackPrices[key].change24h = fallbackPrices[key].change24h != null ? Number(fallbackPrices[key].change24h) : null;
+                    fallbackPrices[key].change7d = fallbackPrices[key].change7d != null ? Number(fallbackPrices[key].change7d) : null;
+                    fallbackPrices[key].volume24h = fallbackPrices[key].volume24h != null ? Number(fallbackPrices[key].volume24h) : null;
+                }
+            }
+
+            fallbackPrices.providerUsed = 'coingecko';
+            console.log('[DEBUG market-snapshot] Fallback standalone fetch success (CoinGecko) at', new Date().toISOString());
+
+            cache.data = fallbackPrices;
+            cache.timestamp = now;
+            return fallbackPrices;
+        } catch (fallbackErr) {
+            lastErrorTime = Date.now();
+            console.error('[DEBUG market-snapshot] Fallback provider (CoinGecko) failed:', fallbackErr.message);
+
+            // 5. Serve stale cache if available
+            if (cache.data) {
+                console.log('[DEBUG market-snapshot] Both providers failed. Serving stale cached data.');
+                return cache.data;
+            }
+            throw new Error('All market data providers failed');
         }
-        throw error;
     }
 }
 
 export async function GET() {
     try {
         const snapshot = await fetchMarketData();
-        return NextResponse.json(snapshot);
+        return NextResponse.json({ ok: true, ...snapshot });
     } catch (error) {
         return NextResponse.json({
             ok: false,

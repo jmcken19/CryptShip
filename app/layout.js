@@ -1,5 +1,4 @@
 import './globals.css';
-import { AuthProvider } from '@/context/AuthContext';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
@@ -19,18 +18,10 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
-        <div className="ocean-bg" aria-hidden="true">
-          <div className="wave-container">
-            <div className="wave" />
-            <div className="wave" />
-            <div className="wave" />
-          </div>
-        </div>
-        <AuthProvider>
-          <Navbar />
-          <main>{children}</main>
-          <Footer />
-        </AuthProvider>
+        <div className="ocean-bg" aria-hidden="true"></div>
+        <Navbar />
+        <main>{children}</main>
+        <Footer />
       </body>
     </html>
   );

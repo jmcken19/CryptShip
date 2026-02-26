@@ -8,15 +8,20 @@ function formatPrice(price) {
 }
 
 function formatVolume(vol) {
-    if (vol >= 1e9) return '$' + (vol / 1e9).toFixed(1) + 'B';
-    if (vol >= 1e6) return '$' + (vol / 1e6).toFixed(1) + 'M';
-    return '$' + vol.toLocaleString();
+    if (vol == null || vol === '') return '—';
+    const num = Number(vol);
+    if (!Number.isFinite(num)) return '—';
+    if (num >= 1e9) return '$' + (num / 1e9).toFixed(1) + 'B';
+    if (num >= 1e6) return '$' + (num / 1e6).toFixed(1) + 'M';
+    return '$' + num.toLocaleString();
 }
 
 function formatChange(val) {
-    if (val == null) return '—';
-    const prefix = val >= 0 ? '+' : '';
-    return prefix + val.toFixed(2) + '%';
+    if (val == null || val === '') return '—';
+    const num = Number(val);
+    if (!Number.isFinite(num)) return '—';
+    const prefix = num >= 0 ? '+' : '';
+    return prefix + num.toFixed(2) + '%';
 }
 
 export default function QuickAnalytics({ chainId, chainConfig }) {
