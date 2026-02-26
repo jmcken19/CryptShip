@@ -133,6 +133,15 @@ export default function VoyageRail({ chain, waypoints }) {
         </svg>
     );
 
+    const handleShare = useCallback(() => {
+        const chainName = chain.toUpperCase();
+        const origin = typeof window !== 'undefined' ? (window.location.origin.includes('localhost') ? 'https://cryptship.com' : window.location.origin) : 'https://cryptship.com';
+        const url = `${origin}/${chain}`;
+        const text = `Just completed the Cryptship voyage and set up my wallet trading foundations for ${chainName}. Shipping trading on-chain, safely.`;
+        const intentUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+        window.open(intentUrl, "_blank", "noopener,noreferrer");
+    }, [chain]);
+
     const isFullyComplete = Object.values(completedWaypoints).filter(Boolean).length === waypoints.length;
 
     return (
@@ -264,7 +273,16 @@ export default function VoyageRail({ chain, waypoints }) {
                         <div className="complete-icon">🎉</div>
                         <h3>Voyage Complete!</h3>
                         <p>You&apos;ve mastered the foundations of {chain.toUpperCase()} wallet trading.</p>
-                        <Link href="/" className="btn btn-primary">Return to Home</Link>
+
+                        <div className="complete-actions" style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-md)', justifyContent: 'center', marginTop: 'var(--space-xl)' }}>
+                            <button onClick={handleShare} className="btn btn-primary" style={{ background: 'var(--gold-500)', color: 'var(--navy-950)', border: 'none', fontWeight: '800' }}>
+                                <span style={{ marginRight: '8px' }}>𝕏</span> Share on X
+                            </button>
+
+                            <Link href="/" className="btn btn-outline" style={{ minWidth: '150px' }}>
+                                Back to Home
+                            </Link>
+                        </div>
                     </div>
                 )}
             </div>
