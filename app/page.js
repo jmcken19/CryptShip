@@ -6,8 +6,8 @@ import DevBio from '@/components/DevBio';
 import Donate from '@/components/Donate';
 
 export const metadata = {
-  title: 'Cryptship — Shipping Users to the Blockchain',
-  description: 'Guided onboarding voyages for SOL, ETH, and BTC. Build wallet fundamentals, learn how to read the network, and move safely.',
+  title: 'Cryptship — Shipping users to on-chain trading — safely and confidently.',
+  description: 'Guided onboarding voyages for SOL, ETH, and BTC. Build wallet trading foundations, learn how to read the network, and move safely.',
 };
 
 export default function HomePage() {

@@ -12,23 +12,23 @@ export default function DisclaimerPage() {
                 <h2>Educational Disclaimer</h2>
                 <p>
                     Cryptship is an educational platform designed to help users learn about blockchain
-                    technology, cryptocurrency wallets, and on-chain transactions. All content provided
+                    technology, cryptocurrency wallets, and safe on-chain trading workflows. All content provided
                     on this website is for informational and educational purposes only.
                 </p>
                 <p>
                     <strong>This is not financial advice.</strong> Nothing on Cryptship should be
-                    construed as investment advice, financial guidance, or a recommendation to buy,
+                    construed as investing advice, financial guidance, or a recommendation to buy,
                     sell, or hold any cryptocurrency or digital asset.
                 </p>
                 <p>
                     Cryptocurrency involves significant risk, including the potential loss of all
-                    invested capital. Users should:
+                    invested capital. Cryptship focuses on wallet trading foundations and on-chain trading readiness. Users should:
                 </p>
                 <ul>
                     <li>Conduct their own research before making any financial decisions.</li>
                     <li>Consult with qualified financial advisors for personalized advice.</li>
                     <li>Understand that past performance does not guarantee future results.</li>
-                    <li>Only invest what they can afford to lose.</li>
+                    <li>Only trade what they can afford to lose.</li>
                 </ul>
 
                 <h2>Accuracy of Information</h2>
@@ -52,10 +52,6 @@ export default function DisclaimerPage() {
                 </p>
                 <ul>
                     <li>
-                        <strong>Account data:</strong> If you create an account, we store your email
-                        and hashed password. We never store plain-text passwords.
-                    </li>
-                    <li>
                         <strong>Progress data:</strong> Your voyage completion status is stored to
                         provide continuity across sessions and devices.
                     </li>
@@ -66,10 +62,6 @@ export default function DisclaimerPage() {
                     <li>
                         <strong>No selling:</strong> We never sell, rent, or share your personal
                         information with third parties.
-                    </li>
-                    <li>
-                        <strong>Cookies:</strong> We use a single HTTP-only authentication cookie
-                        to maintain your login session. No tracking cookies.
                     </li>
                 </ul>
 

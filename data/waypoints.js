@@ -26,7 +26,7 @@ export function getWaypoints(chain) {
             points: [
                 'Enable two-factor authentication (2FA) immediately — use an authenticator app, not SMS if possible.',
                 'Add a payment method (bank, debit card) to deposit funds.',
-                'Start small: a small amount is enough to learn with. This is education, not investment advice.',
+                'Start small: a small amount is enough to learn with. This is education, not investing advice.',
                 'Never share your Coinbase login credentials, 2FA codes, or account recovery details with anyone.',
                 'Bookmark coinbase.com — always navigate from your bookmark, never from links in emails or messages.',
             ],

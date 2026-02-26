@@ -56,7 +56,6 @@ export default function ChainPage({ chainId }) {
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginTop: '0.75rem', marginBottom: '1.5rem', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                    <span>ℹ️</span>
                     <span>Prices update periodically and may not reflect real-time market movements.</span>
                 </div>
 
@@ -72,10 +71,10 @@ export default function ChainPage({ chainId }) {
             {/* D) Onboarding Voyage */}
             <section className="section">
                 <h2 className="section-title">
-                    <span className="icon">⛵</span> {chain.name} Onboarding Voyage
+                    <span className="icon">⛵</span> {chain.name} Trading Readiness Route
                 </h2>
                 <p className="text-muted mb-lg" style={{ fontSize: '0.9rem' }}>
-                    Complete all 6 waypoints to build a solid foundation for using {chain.name} safely.
+                    Complete all 6 waypoints to build a solid foundation for on-chain trading readiness.
                 </p>
                 <VoyageRail chain={chainId} waypoints={waypoints} />
             </section>

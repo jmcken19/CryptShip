@@ -33,11 +33,11 @@ export default function Hero() {
             <h1>Cryptship</h1>
 
             <p className="hero-subtitle">
-                Shipping users to the blockchain — safely and confidently.
+                Shipping users to on-chain trading — safely and confidently.
             </p>
 
             <p className="hero-description">
-                Guided onboarding voyages for SOL, ETH, and BTC. Build wallet fundamentals,
+                Guided onboarding voyages for SOL, ETH, and BTC. Build wallet trading foundations,
                 learn how to read the network, and move safely.
             </p>
         </section>

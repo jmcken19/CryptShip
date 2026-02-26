@@ -7,6 +7,7 @@ export default function VoyageRail({ chain, waypoints }) {
     const [completedWaypoints, setCompletedWaypoints] = useState({});
     const [activeWaypoint, setActiveWaypoint] = useState(1);
     const [toastMsg, setToastMsg] = useState('');
+    const [showResetModal, setShowResetModal] = useState(false);
     const waypointRefs = useRef({});
     const railRef = useRef(null);
 
@@ -82,7 +83,7 @@ export default function VoyageRail({ chain, waypoints }) {
             };
             localStorage.setItem(`cryptship_progress_${chain}`, JSON.stringify(savePayload));
         } catch {
-            setToastMsg('Failed to save progress offline. Note: Private mode limits saving.');
+            setToastMsg('Failed to save progress offline.');
             return;
         }
 
@@ -101,44 +102,112 @@ export default function VoyageRail({ chain, waypoints }) {
         }
     }, [completedWaypoints, chain, waypoints, scrollToWaypoint]);
 
-    // Calculate ship position
-    const shipTop = `${(activeWaypoint - 1) * (100 / (waypoints.length - 1 || 1))}%`;
+    const handleReset = () => {
+        localStorage.removeItem(`cryptship_progress_${chain}`);
+        setCompletedWaypoints({});
+        setShowResetModal(false);
+        scrollToWaypoint(1);
+        setActiveWaypoint(1);
+    };
+
+    // Calculate ship position for the curved rail
+    // We'll use a CSS variable or direct style to position the ship along the rail
+    const shipProgress = (activeWaypoint - 1) / (waypoints.length - 1 || 1);
+
+    // Ship Glyph SVG
+    const PirateShip = () => (
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+            <path d="M4 18h16l-2 3H6l-2-3z" />
+            <path d="M11 5v13h2V5h-2z" />
+            <path d="M13 6l6 4-6 4V6z" />
+            <rect x="12" y="2" width="6" height="3" fill="var(--gold-400)" />
+        </svg>
+    );
+
+    // Island Silhouette SVG
+    const Island = ({ active, completed }) => (
+        <svg viewBox="0 0 24 24" width="32" height="32" className={`island-icon ${active ? 'active' : ''} ${completed ? 'completed' : ''}`}>
+            <path d="M2 20c4-2 6-2 10 0s6 2 10 0v2H2v-2z" fill="currentColor" opacity="0.3" />
+            <path d="M6 18c2-4 6-8 12-4" stroke="currentColor" strokeWidth="1" fill="none" opacity="0.5" />
+            <path d="M12 10c-1-2-3-3-5-1s-1 4 2 5" fill="currentColor" opacity={active ? 1 : 0.6} />
+        </svg>
+    );
+
     const isFullyComplete = Object.values(completedWaypoints).filter(Boolean).length === waypoints.length;
 
     return (
         <div className="voyage-layout">
             {/* Toast */}
-            {toastMsg && (
-                <div className="toast-error" role="alert">
-                    {toastMsg}
+            {toastMsg && <div className="toast-error" role="alert">{toastMsg}</div>}
+
+            {/* Reset Confirmation Modal */}
+            {showResetModal && (
+                <div className="modal-overlay">
+                    <div className="modal-card card">
+                        <h3>Reset Voyage?</h3>
+                        <p className="text-muted">This will clear your progress for this {chain.toUpperCase()} voyage.</p>
+                        <div className="modal-actions">
+                            <button className="btn btn-outline btn-sm" onClick={() => setShowResetModal(false)}>Cancel</button>
+                            <button className="btn btn-primary btn-sm" onClick={handleReset}>Yes, Reset</button>
+                        </div>
+                    </div>
                 </div>
             )}
 
-            {/* Rail */}
-            <aside className="voyage-rail" ref={railRef} aria-label="Voyage navigation">
-                <div className="rail-title">Voyage Progress</div>
-                <div className="rail-track">
-                    <span
-                        className="rail-ship"
-                        style={{ top: shipTop }}
-                        role="img"
-                        aria-label="Your position"
-                    >
-                        ⛵
-                    </span>
+            {/* Mobile Route Strip */}
+            <div className="mobile-route-strip">
+                <div className="route-strip-track">
                     {waypoints.map((wp) => (
                         <div
                             key={wp.id}
-                            className={`rail-waypoint ${activeWaypoint === wp.id ? 'active' : ''} ${completedWaypoints[wp.id] ? 'completed' : ''}`}
+                            className={`route-strip-node ${activeWaypoint === wp.id ? 'active' : ''} ${completedWaypoints[wp.id] ? 'completed' : ''}`}
                             onClick={() => scrollToWaypoint(wp.id)}
-                            onKeyDown={(e) => e.key === 'Enter' && scrollToWaypoint(wp.id)}
-                            tabIndex={0}
-                            role="button"
-                            aria-label={`Navigate to waypoint ${wp.id}: ${wp.title}`}
                         >
-                            <span className="rail-waypoint-label">
-                                {wp.id}. {wp.title}
+                            <span className="node-icon">
+                                {activeWaypoint === wp.id ? <PirateShip /> : <div className="island-dot" />}
                             </span>
+                            <span className="node-label">WP {wp.id}</span>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            {/* Desktop Rail */}
+            <aside className="voyage-rail" ref={railRef}>
+                <div className="rail-header">
+                    <div className="rail-title">Sea Route</div>
+                    <button className="btn-reset-voyage" onClick={() => setShowResetModal(true)}>
+                        Start over
+                    </button>
+                </div>
+
+                <div className="sea-route-container">
+                    {/* The curved route line is handled in CSS */}
+                    <div className="sea-route-line"></div>
+
+                    {/* Ship Indicator */}
+                    <div
+                        className="ship-indicator"
+                        style={{ top: `calc(${shipProgress * 100}% - 12px)` }}
+                    >
+                        <PirateShip />
+                    </div>
+
+                    {waypoints.map((wp) => (
+                        <div
+                            key={wp.id}
+                            className={`sea-waypoint ${activeWaypoint === wp.id ? 'active' : ''} ${completedWaypoints[wp.id] ? 'completed' : ''}`}
+                            onClick={() => scrollToWaypoint(wp.id)}
+                            style={{ top: `${(wp.id - 1) * (100 / (waypoints.length - 1 || 1))}%` }}
+                        >
+                            <div className="waypoint-marker">
+                                <Island active={activeWaypoint === wp.id} completed={completedWaypoints[wp.id]} />
+                                {completedWaypoints[wp.id] && <span className="check-indicator">✓</span>}
+                            </div>
+                            <div className="waypoint-info">
+                                <span className="wp-id">Waypoint {wp.id}</span>
+                                <span className="wp-title">{wp.title}</span>
+                            </div>
                         </div>
                     ))}
                 </div>
@@ -153,49 +222,49 @@ export default function VoyageRail({ chain, waypoints }) {
                         ref={(el) => (waypointRefs.current[wp.id] = el)}
                         className={`card waypoint-card ${activeWaypoint === wp.id ? 'active' : ''} ${completedWaypoints[wp.id] ? 'completed' : ''}`}
                     >
-                        <div className="waypoint-number">Waypoint {wp.id}</div>
-                        <h3 className="waypoint-title">{wp.title}</h3>
-                        <p className="waypoint-goal">{wp.goal}</p>
-
-                        <ul className="waypoint-points">
-                            {wp.points.map((point, i) => (
-                                <li key={i}>{point}</li>
-                            ))}
-                        </ul>
-
-                        <div className="waypoint-action">
-                            <strong>Action:</strong> {wp.action}
-                            {wp.actionLink && (
-                                <>
-                                    {' — '}
-                                    <a href={wp.actionLink} target="_blank" rel="noopener noreferrer" style={{ wordBreak: 'break-all' }}>
-                                        {wp.actionLink.includes('coinbase.com/join') ? 'coinbase.com/join' : wp.actionLink.replace('https://', '').replace('www.', '')}
-                                    </a>
-                                </>
-                            )}
+                        <div className="waypoint-card-header">
+                            <div className="waypoint-number">Waypoint {wp.id}</div>
+                            <h3 className="waypoint-title">{wp.title}</h3>
                         </div>
 
-                        <label className="waypoint-checkbox">
-                            <input
-                                type="checkbox"
-                                checked={!!completedWaypoints[wp.id]}
-                                onChange={(e) => handleCheckbox(wp.id, e.target.checked)}
-                            />
-                            <span className="waypoint-checkbox-label">{wp.checkbox}</span>
-                        </label>
+                        <div className="waypoint-body">
+                            <div className="waypoint-goal">
+                                <strong>Goal:</strong> {wp.goal}
+                            </div>
+
+                            <ul className="waypoint-points">
+                                {wp.points.map((point, i) => (
+                                    <li key={i}>{point}</li>
+                                ))}
+                            </ul>
+
+                            <div className="waypoint-action">
+                                <strong>Action:</strong> {wp.action}
+                                {wp.actionLink && (
+                                    <a href={wp.actionLink} target="_blank" rel="noopener noreferrer" className="action-link">
+                                        {wp.actionLink.includes('coinbase.com/join') ? 'coinbase.com/join' : wp.actionLink.replace('https://', '').replace('www.', '')}
+                                    </a>
+                                )}
+                            </div>
+
+                            <label className="waypoint-checkbox">
+                                <input
+                                    type="checkbox"
+                                    checked={!!completedWaypoints[wp.id]}
+                                    onChange={(e) => handleCheckbox(wp.id, e.target.checked)}
+                                />
+                                <span className="waypoint-checkbox-label">Mark complete</span>
+                            </label>
+                        </div>
                     </div>
                 ))}
 
                 {isFullyComplete && (
-                    <div className="card waypoint-card active" style={{ textAlign: 'center', borderColor: 'var(--teal-400)', marginTop: '2rem' }}>
-                        <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🎉</div>
-                        <h3 className="waypoint-title" style={{ color: 'var(--teal-400)', marginBottom: '0.5rem' }}>Voyage Complete!</h3>
-                        <p className="text-muted" style={{ marginBottom: '1.5rem' }}>
-                            You've successfully completed your {chain.toUpperCase()} onboarding.
-                        </p>
-                        <Link href="/" className="btn btn-primary">
-                            Return to Home
-                        </Link>
+                    <div className="card voyage-complete-card">
+                        <div className="complete-icon">🎉</div>
+                        <h3>Voyage Complete!</h3>
+                        <p>You&apos;ve mastered the foundations of {chain.toUpperCase()} wallet trading.</p>
+                        <Link href="/" className="btn btn-primary">Return to Home</Link>
                     </div>
                 )}
             </div>

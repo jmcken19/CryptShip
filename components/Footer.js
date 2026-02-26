@@ -10,7 +10,7 @@ export default function Footer() {
                     <li><a href="mailto:contact@cryptship.com">Contact</a></li>
                 </ul>
                 <p className="footer-disclaimer">
-                    Educational only — not financial advice. Cryptship provides learning resources to help users understand blockchain technology. Always do your own research.
+                    Cryptship is not investing advice. It teaches wallet setup and safe on-chain trading workflows. You are responsible for any trades and decisions.
                 </p>
             </div>
         </footer>

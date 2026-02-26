@@ -73,7 +73,6 @@ export default function MarketSnapshot() {
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginTop: '0.5rem', marginBottom: '1rem', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                <span>ℹ️</span>
                 <span>Prices update periodically and may not reflect real-time market movements.</span>
             </div>
 
