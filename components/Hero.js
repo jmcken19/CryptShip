@@ -37,8 +37,7 @@ export default function Hero() {
             </p>
 
             <p className="hero-description">
-                Guided onboarding voyages for SOL, ETH, and BTC. Build wallet trading foundations,
-                learn how to read the network, and move safely.
+                Guided onboarding voyages for SOL, ETH, and BTC. Learn how to set up and fund a wallet for trading.
             </p>
         </section>
     );

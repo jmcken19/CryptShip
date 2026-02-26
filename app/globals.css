@@ -1155,36 +1155,27 @@ input {
   padding: var(--space-md) 0;
 }
 
-/* Curved Route Line (CSS Only) */
-.sea-route-line {
-  position: absolute;
-  left: 12px;
-  top: 0;
-  bottom: 0;
-  width: 2px;
-  background: linear-gradient(to bottom,
-      var(--border-default) 0%,
-      var(--ocean-500) 50%,
-      var(--border-default) 100%);
-  border-radius: 1px;
+/* Sea Route Visuals */
+.sea-route-svg {
+  pointer-events: none;
+  z-index: 1;
 }
 
-/* Subtle Wave Effect on line */
-.sea-route-line::after {
-  content: '';
+.ship-wrapper {
   position: absolute;
-  inset: 0;
-  background-image: radial-gradient(circle at 10px 50%, transparent 8px, rgba(45, 212, 191, 0.05) 9px);
-  background-size: 20px 40px;
-  opacity: 0.3;
+  width: 24px;
+  height: 24px;
+  pointer-events: none;
+  transition: top var(--transition-slow);
+  z-index: 10;
 }
 
 .ship-indicator {
   position: absolute;
-  left: 1px;
+  left: 0;
+  top: 0;
+  transform: translate(-50%, -50%);
   color: var(--gold-400);
-  transition: top var(--transition-slow);
-  z-index: 10;
   filter: drop-shadow(0 0 8px rgba(245, 166, 35, 0.4));
   animation: shipBob 3s ease-in-out infinite;
 }
@@ -1193,11 +1184,11 @@ input {
 
   0%,
   100% {
-    transform: translateY(0) rotate(0deg);
+    transform: translate(-50%, -50%) rotate(0deg);
   }
 
   50% {
-    transform: translateY(-3px) rotate(2deg);
+    transform: translate(-50%, -53%) rotate(2deg);
   }
 }
 
@@ -1206,9 +1197,9 @@ input {
   left: 0;
   display: flex;
   align-items: center;
-  gap: var(--space-md);
   cursor: pointer;
   transition: all var(--transition-fast);
+  transform: translateY(-50%);
   width: 100%;
 }
 

@@ -191,34 +191,60 @@ export default function VoyageRail({ chain, waypoints }) {
                 </div>
 
                 <div className="sea-route-container">
-                    {/* The curved route line is handled in CSS */}
-                    <div className="sea-route-line"></div>
+                    {/* Simplified SVG Route Path */}
+                    <svg className="sea-route-svg" preserveAspectRatio="none" viewBox="0 0 40 100" style={{ position: 'absolute', left: 0, top: 0, width: '40px', height: '100%', overflow: 'visible' }}>
+                        <path
+                            d="M 12 0 Q 30 25, 12 50 T 12 100"
+                            fill="none"
+                            stroke="var(--navy-800)"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            opacity="0.4"
+                        />
+                        <path
+                            d="M 12 0 Q 30 25, 12 50 T 12 100"
+                            fill="none"
+                            stroke="var(--ocean-500)"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeDasharray="4 6"
+                            opacity="0.3"
+                        />
+                    </svg>
 
-                    {/* Ship Indicator */}
+                    {/* Ship Indicator - positioned relative to the center line (12px) */}
                     <div
-                        className="ship-indicator"
-                        style={{ top: `calc(${shipProgress * 100}% - 12px)` }}
+                        className="ship-wrapper"
+                        style={{
+                            top: `${shipProgress * 100}%`,
+                            left: '12px',
+                        }}
                     >
-                        <PirateShip />
+                        <div className="ship-indicator">
+                            <PirateShip />
+                        </div>
                     </div>
 
-                    {waypoints.map((wp) => (
-                        <div
-                            key={wp.id}
-                            className={`sea-waypoint ${activeWaypoint === wp.id ? 'active' : ''} ${completedWaypoints[wp.id] ? 'completed' : ''}`}
-                            onClick={() => scrollToWaypoint(wp.id)}
-                            style={{ top: `${(wp.id - 1) * (100 / (waypoints.length - 1 || 1))}%` }}
-                        >
-                            <div className="waypoint-marker">
-                                <Island active={activeWaypoint === wp.id} completed={completedWaypoints[wp.id]} />
-                                {completedWaypoints[wp.id] && <span className="check-indicator">✓</span>}
+                    {waypoints.map((wp) => {
+                        const topPos = (wp.id - 1) * (100 / (waypoints.length - 1 || 1));
+                        return (
+                            <div
+                                key={wp.id}
+                                className={`sea-waypoint ${activeWaypoint === wp.id ? 'active' : ''} ${completedWaypoints[wp.id] ? 'completed' : ''}`}
+                                onClick={() => scrollToWaypoint(wp.id)}
+                                style={{ top: `${topPos}%` }}
+                            >
+                                <div className="waypoint-marker" style={{ left: '12px' }}>
+                                    <Island active={activeWaypoint === wp.id} completed={completedWaypoints[wp.id]} />
+                                    {completedWaypoints[wp.id] && <span className="check-indicator">✓</span>}
+                                </div>
+                                <div className="waypoint-info">
+                                    <span className="wp-label">WP {wp.id}</span>
+                                    <span className="wp-name">{wp.title}</span>
+                                </div>
                             </div>
-                            <div className="waypoint-info">
-                                <span className="wp-id">Waypoint {wp.id}</span>
-                                <span className="wp-title">{wp.title}</span>
-                            </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
             </aside>
 
