@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
+import { getWaypoints } from '@/data/waypoints';
 
 export default function VoyageRail({ chain, waypoints }) {
     const [completedWaypoints, setCompletedWaypoints] = useState({});

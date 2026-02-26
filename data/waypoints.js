@@ -1,8 +1,10 @@
+import { chains } from './chainConfig';
+
 export function getWaypoints(chainId, devicePreference = 'both') {
-    const chainConfig = chains[chainId];
+    const chainConfig = chains[chainId] || chains.sol;
     const chainName = chainConfig.name;
-    const networkLabel = chainConfig.network;
-    const c = chainId.toUpperCase();
+    const networkLabel = chainConfig.symbol; // Using symbol as network label for consistency
+    const c = chainConfig.symbol;
 
     return [
         {
