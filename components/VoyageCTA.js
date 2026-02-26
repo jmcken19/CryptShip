@@ -58,7 +58,7 @@ export default function VoyageCTA() {
     return (
         <section className="section">
             <h2 className="section-title">
-                <span className="icon">⛵</span> Start Your Voyage
+                Start Your Voyage
             </h2>
 
             <div className="voyage-cta-grid">
@@ -80,7 +80,7 @@ export default function VoyageCTA() {
                                         <div className="voyage-progress-fill" style={{ width: `${pct}%`, backgroundColor: isFullyComplete ? 'var(--teal-400)' : 'var(--blue-400)' }} />
                                     </div>
                                     <div className="voyage-progress-text">
-                                        {p.completed}/{p.total} waypoints · {pct}% complete {isFullyComplete && '✅'}
+                                        {p.completed}/{p.total} waypoints · {pct}% complete
                                     </div>
                                 </>
                             )}

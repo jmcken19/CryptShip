@@ -1245,6 +1245,21 @@ input {
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
 }
 
+.check-indicator-inline {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--teal-400);
+  background: var(--navy-950);
+  border: 1px solid var(--teal-900);
+  border-radius: 4px;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
 .waypoint-info {
   display: flex;
   flex-direction: column;

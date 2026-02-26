@@ -17,7 +17,7 @@ export default function Headlines() {
     if (loading) {
         return (
             <section className="section">
-                <h2 className="section-title"><span className="icon">◈</span> Top Headlines</h2>
+                <h2 className="section-title">Top Headlines</h2>
                 <div className="loading-shimmer skeleton" style={{ height: '200px' }} />
             </section>
         );
@@ -28,7 +28,7 @@ export default function Headlines() {
     return (
         <section className="section">
             <h2 className="section-title">
-                <span className="icon">◈</span> Top Headlines
+                Top Headlines
             </h2>
             <div>
                 {data.headlines.map((item) => (

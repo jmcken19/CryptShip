@@ -1,7 +1,8 @@
-export function getWaypoints(chain) {
-    const c = chain.toUpperCase();
-    const chainName = c === 'SOL' ? 'Solana' : c === 'ETH' ? 'Ethereum' : 'Bitcoin';
-    const networkLabel = c === 'SOL' ? 'Solana network' : c === 'ETH' ? 'Ethereum network' : 'Bitcoin network';
+export function getWaypoints(chainId, devicePreference = 'both') {
+    const chainConfig = chains[chainId];
+    const chainName = chainConfig.name;
+    const networkLabel = chainConfig.network;
+    const c = chainId.toUpperCase();
 
     return [
         {
@@ -33,12 +34,20 @@ export function getWaypoints(chain) {
             id: 3,
             title: 'Download Phantom',
             goal: 'Install Phantom wallet — your self-custody tool.',
-            points: [
-                'Download the app or extension ONLY from phantom.app.',
+            points: devicePreference === 'mobile' ? [
+                'Download the Phantom app from the App Store or Google Play.',
                 'Secure your 12-word seed phrase on paper, never digitally.',
-                'Phantom supports Solana, Ethereum, and Bitcoin.'
+                'Enable biometric security (FaceID/Fingerprint) in the app.'
+            ] : devicePreference === 'computer' ? [
+                'Install the Phantom extension from the Chrome Web Store.',
+                'Secure your 12-word seed phrase on paper, never digitally.',
+                'Set a strong unlock password for the extension.'
+            ] : [
+                'Install Phantom on your phone and as a browser extension.',
+                'Secure your 12-word seed phrase on paper, never digitally.',
+                'You can use the same seed phrase to sync both devices.'
             ],
-            action: 'Install Phantom and secure your seed phrase offline.',
+            action: devicePreference === 'mobile' ? 'Install the Phantom app.' : devicePreference === 'computer' ? 'Install the Phantom extension.' : 'Install Phantom on both mobile and computer.',
             actionLink: 'https://phantom.app',
             checkbox: 'I have installed Phantom and secured my seed phrase offline.',
         },

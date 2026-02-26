@@ -2,7 +2,7 @@ export default function DevBio() {
     return (
         <section className="section">
             <h2 className="section-title">
-                <span className="icon">◈</span> About the Developer
+                About the Developer
             </h2>
             <div className="card">
                 <div className="bio-content">

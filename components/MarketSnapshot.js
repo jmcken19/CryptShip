@@ -59,7 +59,7 @@ export default function MarketSnapshot() {
         <section className="section">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <h2 className="section-title" style={{ marginBottom: 0 }}>
-                    <span className="icon">◈</span> Market Snapshot
+                    Market Snapshot
                 </h2>
                 {errorMsg && !data ? (
                     <span style={{ fontSize: '0.8rem', color: 'var(--coral-400)' }}>

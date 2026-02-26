@@ -71,10 +71,10 @@ export default function ChainPage({ chainId }) {
             {/* D) Onboarding Voyage */}
             <section className="section">
                 <h2 className="section-title">
-                    <span className="icon">⛵</span> {chain.name} Trading Readiness Route
+                    {chain.name} Wallet Trading Steps
                 </h2>
                 <p className="text-muted mb-lg" style={{ fontSize: '0.9rem' }}>
-                    Complete all 6 waypoints to build a solid foundation for on-chain trading readiness.
+                    Complete all 6 waypoints to set up and safely fund your wallet for trading.
                 </p>
                 <VoyageRail chain={chainId} waypoints={waypoints} />
             </section>

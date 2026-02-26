@@ -21,7 +21,7 @@ export default function ChainHeadlines({ chainId }) {
     if (loading) {
         return (
             <section className="section">
-                <h2 className="section-title"><span className="icon">◈</span> Headlines</h2>
+                <h2 className="section-title">Headlines</h2>
                 <div className="card">
                     <div className="loading-shimmer skeleton" style={{ height: '150px' }} />
                 </div>
@@ -32,7 +32,7 @@ export default function ChainHeadlines({ chainId }) {
     return (
         <section className="section">
             <h2 className="section-title">
-                <span className="icon">◈</span> Headlines
+                Headlines
             </h2>
             <div className="card">
                 {headlines.length === 0 ? (

@@ -110,8 +110,28 @@ export default function VoyageRail({ chain, waypoints }) {
         setActiveWaypoint(1);
     };
 
+    // Device Preference
+    const [devicePref, setDevicePref] = useState(null); // 'mobile', 'computer', 'both'
+    const [showDeviceModal, setShowDeviceModal] = useState(false);
+
+    useEffect(() => {
+        const saved = localStorage.getItem(`cryptship_device_${chain}`);
+        if (saved) {
+            setDevicePref(saved);
+        } else {
+            setShowDeviceModal(true);
+        }
+    }, [chain]);
+
+    const handleSetDevice = (pref) => {
+        setDevicePref(pref);
+        localStorage.setItem(`cryptship_device_${chain}`, pref);
+        setShowDeviceModal(false);
+    };
+
+    const waypointsWithPref = getWaypoints(chain, devicePref || 'both');
+
     // Calculate ship position for the curved rail
-    // We'll use a CSS variable or direct style to position the ship along the rail
     const shipProgress = (activeWaypoint - 1) / (waypoints.length - 1 || 1);
 
     // Ship Glyph SVG
@@ -163,6 +183,44 @@ export default function VoyageRail({ chain, waypoints }) {
                 </div>
             )}
 
+            {/* Device Preference Modal */}
+            {showDeviceModal && (
+                <div className="modal-overlay">
+                    <div className="modal-card card" style={{ maxWidth: '400px' }}>
+                        <h3>Choose your setup</h3>
+                        <p className="text-muted mb-lg">Select how you want to set up your wallet.</p>
+
+                        <div className="device-options" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)', marginBottom: 'var(--space-xl)' }}>
+                            <label className="device-option card" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 'var(--space-md)', padding: 'var(--space-md)' }}>
+                                <input type="radio" name="device" onChange={() => handleSetDevice('mobile')} />
+                                <div>
+                                    <div style={{ fontWeight: '700' }}>Mobile</div>
+                                    <div className="text-muted" style={{ fontSize: '0.75rem' }}>Phone or Tablet</div>
+                                </div>
+                            </label>
+                            <label className="device-option card" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 'var(--space-md)', padding: 'var(--space-md)' }}>
+                                <input type="radio" name="device" onChange={() => handleSetDevice('computer')} />
+                                <div>
+                                    <div style={{ fontWeight: '700' }}>Computer</div>
+                                    <div className="text-muted" style={{ fontSize: '0.75rem' }}>Browser extension</div>
+                                </div>
+                            </label>
+                            <label className="device-option card" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 'var(--space-md)', padding: 'var(--space-md)' }}>
+                                <input type="radio" name="device" onChange={() => handleSetDevice('both')} />
+                                <div>
+                                    <div style={{ fontWeight: '700' }}>Both</div>
+                                    <div className="text-muted" style={{ fontSize: '0.75rem' }}>Synced setup</div>
+                                </div>
+                            </label>
+                        </div>
+
+                        <button className="btn btn-primary w-full" onClick={() => !devicePref && handleSetDevice('both')}>
+                            Start Voyage
+                        </button>
+                    </div>
+                </div>
+            )}
+
             {/* Mobile Route Strip */}
             <div className="mobile-route-strip">
                 <div className="route-strip-track">
@@ -185,9 +243,14 @@ export default function VoyageRail({ chain, waypoints }) {
             <aside className="voyage-rail" ref={railRef}>
                 <div className="rail-header">
                     <div className="rail-title">Sea Route</div>
-                    <button className="btn-reset-voyage" onClick={() => setShowResetModal(true)}>
-                        Start over
-                    </button>
+                    <div style={{ display: 'flex', gap: 'var(--space-md)' }}>
+                        <button className="btn-reset-voyage" onClick={() => setShowDeviceModal(true)} style={{ textDecoration: 'none', fontSize: '0.65rem' }}>
+                            Change device
+                        </button>
+                        <button className="btn-reset-voyage" onClick={() => setShowResetModal(true)} style={{ fontSize: '0.65rem' }}>
+                            Start over
+                        </button>
+                    </div>
                 </div>
 
                 <div className="sea-route-container">
@@ -236,10 +299,12 @@ export default function VoyageRail({ chain, waypoints }) {
                             >
                                 <div className="waypoint-marker" style={{ left: '12px' }}>
                                     <Island active={activeWaypoint === wp.id} completed={completedWaypoints[wp.id]} />
-                                    {completedWaypoints[wp.id] && <span className="check-indicator">✓</span>}
                                 </div>
                                 <div className="waypoint-info">
-                                    <span className="wp-label">WP {wp.id}</span>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                        <span className="wp-label">WP {wp.id}</span>
+                                        {completedWaypoints[wp.id] && <span className="check-indicator-inline">✓</span>}
+                                    </div>
                                     <span className="wp-name">{wp.title}</span>
                                 </div>
                             </div>
@@ -250,7 +315,7 @@ export default function VoyageRail({ chain, waypoints }) {
 
             {/* Waypoint Cards */}
             <div className="voyage-content">
-                {waypoints.map((wp) => (
+                {waypointsWithPref.map((wp) => (
                     <div
                         key={wp.id}
                         id={`waypoint-${wp.id}`}
@@ -296,8 +361,7 @@ export default function VoyageRail({ chain, waypoints }) {
 
                 {isFullyComplete && (
                     <div className="card voyage-complete-card">
-                        <div className="complete-icon">🎉</div>
-                        <h3>Voyage Complete!</h3>
+                        <h3>Voyage Complete</h3>
                         <p>You&apos;ve mastered the foundations of {chain.toUpperCase()} wallet trading.</p>
 
                         <div className="complete-actions" style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-md)', justifyContent: 'center', marginTop: 'var(--space-xl)' }}>

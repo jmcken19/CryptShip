@@ -50,7 +50,7 @@ export default function QuickAnalytics({ chainId, chainConfig }) {
     if (loading) {
         return (
             <div className="section">
-                <h2 className="section-title"><span className="icon">◈</span> Quick Analytics</h2>
+                <h2 className="section-title">Quick Analytics</h2>
                 <div className="analytics-grid">
                     {[...Array(6)].map((_, i) => (
                         <div key={i} className="analytics-item">
