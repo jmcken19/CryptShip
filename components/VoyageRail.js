@@ -114,6 +114,8 @@ export default function VoyageRail({ chain, waypoints }) {
     // Device Preference
     const [devicePref, setDevicePref] = useState(null); // 'mobile', 'web', 'both'
     const [showDeviceModal, setShowDeviceModal] = useState(false);
+    const [validationError, setValidationError] = useState('');
+    const [tempPref, setTempPref] = useState(null);
 
     useEffect(() => {
         const saved = localStorage.getItem(`cryptship_device_${chain}`);
@@ -124,10 +126,15 @@ export default function VoyageRail({ chain, waypoints }) {
         }
     }, [chain]);
 
-    const handleSetDevice = (pref) => {
-        setDevicePref(pref);
-        localStorage.setItem(`cryptship_device_${chain}`, pref);
+    const handleSetDevice = () => {
+        if (!tempPref) {
+            setValidationError('Please select Mobile, Web, or Both to continue.');
+            return;
+        }
+        setDevicePref(tempPref);
+        localStorage.setItem(`cryptship_device_${chain}`, tempPref);
         setShowDeviceModal(false);
+        setValidationError('');
     };
 
     const waypointsWithPref = getWaypoints(chain, devicePref || 'both');
@@ -168,7 +175,7 @@ export default function VoyageRail({ chain, waypoints }) {
     const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 
     return (
-        <div className="voyage-layout">
+        <div className={`voyage-layout ${!devicePref ? 'voyage-locked' : ''}`}>
             {/* Toast */}
             {toastMsg && <div className="toast-error" role="alert">{toastMsg}</div>}
 
@@ -194,22 +201,22 @@ export default function VoyageRail({ chain, waypoints }) {
                         <p className="text-muted mb-lg">Select how you want to set up your wallet.</p>
 
                         <div className="device-options" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)', marginBottom: 'var(--space-xl)' }}>
-                            <label className="device-option card" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 'var(--space-md)', padding: 'var(--space-md)' }}>
-                                <input type="radio" name="device" checked={devicePref === 'mobile'} onChange={() => handleSetDevice('mobile')} />
+                            <label className={`device-option card ${tempPref === 'mobile' ? 'selected' : ''}`} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 'var(--space-md)', padding: 'var(--space-md)' }}>
+                                <input type="radio" name="device" checked={tempPref === 'mobile'} onChange={() => { setTempPref('mobile'); setValidationError(''); }} />
                                 <div>
                                     <div style={{ fontWeight: '700' }}>Mobile</div>
                                     <div className="text-muted" style={{ fontSize: '0.75rem' }}>Phone or Tablet</div>
                                 </div>
                             </label>
-                            <label className="device-option card" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 'var(--space-md)', padding: 'var(--space-md)' }}>
-                                <input type="radio" name="device" checked={devicePref === 'web'} onChange={() => handleSetDevice('web')} />
+                            <label className={`device-option card ${tempPref === 'web' ? 'selected' : ''}`} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 'var(--space-md)', padding: 'var(--space-md)' }}>
+                                <input type="radio" name="device" checked={tempPref === 'web'} onChange={() => { setTempPref('web'); setValidationError(''); }} />
                                 <div>
                                     <div style={{ fontWeight: '700' }}>Web</div>
                                     <div className="text-muted" style={{ fontSize: '0.75rem' }}>Browser extension</div>
                                 </div>
                             </label>
-                            <label className="device-option card" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 'var(--space-md)', padding: 'var(--space-md)' }}>
-                                <input type="radio" name="device" checked={devicePref === 'both'} onChange={() => handleSetDevice('both')} />
+                            <label className={`device-option card ${tempPref === 'both' ? 'selected' : ''}`} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 'var(--space-md)', padding: 'var(--space-md)' }}>
+                                <input type="radio" name="device" checked={tempPref === 'both'} onChange={() => { setTempPref('both'); setValidationError(''); }} />
                                 <div>
                                     <div style={{ fontWeight: '700' }}>Both</div>
                                     <div className="text-muted" style={{ fontSize: '0.75rem' }}>Synced setup</div>
@@ -217,7 +224,14 @@ export default function VoyageRail({ chain, waypoints }) {
                             </label>
                         </div>
 
-                        <button className="btn btn-primary w-full" onClick={() => !devicePref && handleSetDevice('both')}>
+                        {validationError && (
+                            <div className="form-error mb-md" style={{ textAlign: 'center', fontWeight: '600' }}>{validationError}</div>
+                        )}
+
+                        <button
+                            className={`btn btn-primary w-full ${!tempPref ? 'btn-disabled' : ''}`}
+                            onClick={handleSetDevice}
+                        >
                             Start Voyage
                         </button>
                     </div>
@@ -231,7 +245,8 @@ export default function VoyageRail({ chain, waypoints }) {
                         <div
                             key={wp.id}
                             className={`route-strip-node ${activeWaypoint === wp.id ? 'active' : ''} ${completedWaypoints[wp.id] ? 'completed' : ''}`}
-                            onClick={() => scrollToWaypoint(wp.id)}
+                            onClick={() => devicePref && scrollToWaypoint(wp.id)}
+                            style={{ cursor: devicePref ? 'pointer' : 'not-allowed' }}
                         >
                             <span className="node-icon">
                                 {activeWaypoint === wp.id ? <PirateShip /> : <div className="island-dot" />}
@@ -248,7 +263,7 @@ export default function VoyageRail({ chain, waypoints }) {
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                         <div className="rail-title">Sea Route</div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <span className="mode-badge">Mode: {devicePref ? capitalize(devicePref) : 'Both'}</span>
+                            <span className="mode-badge">Mode: {devicePref ? capitalize(devicePref) : 'Locked'}</span>
                             <button className="change-link" onClick={() => setShowDeviceModal(true)}>
                                 Change
                             </button>
@@ -261,7 +276,7 @@ export default function VoyageRail({ chain, waypoints }) {
                     </div>
                 </div>
 
-                <div className="sea-route-container">
+                <div className="sea-route-container" style={{ opacity: devicePref ? 1 : 0.3, pointerEvents: devicePref ? 'all' : 'none' }}>
                     {/* Simplified SVG Route Path */}
                     <svg className="sea-route-svg" preserveAspectRatio="none" viewBox="0 0 40 100" style={{ position: 'absolute', left: 0, top: 0, width: '40px', height: '100%', overflow: 'visible' }}>
                         <path
@@ -302,8 +317,8 @@ export default function VoyageRail({ chain, waypoints }) {
                             <div
                                 key={wp.id}
                                 className={`sea-waypoint ${activeWaypoint === wp.id ? 'active' : ''} ${completedWaypoints[wp.id] ? 'completed' : ''}`}
-                                onClick={() => scrollToWaypoint(wp.id)}
-                                style={{ top: `${topPos}%` }}
+                                onClick={() => devicePref && scrollToWaypoint(wp.id)}
+                                style={{ top: `${topPos}%`, cursor: devicePref ? 'pointer' : 'not-allowed' }}
                             >
                                 <div className="waypoint-marker" style={{ left: '12px' }}>
                                     <Island active={activeWaypoint === wp.id} completed={completedWaypoints[wp.id]} />
@@ -323,75 +338,90 @@ export default function VoyageRail({ chain, waypoints }) {
 
             {/* Waypoint Cards */}
             <div className="voyage-content">
-                {waypointsWithPref.map((wp) => (
-                    <div
-                        key={wp.id}
-                        id={`waypoint-${wp.id}`}
-                        ref={(el) => (waypointRefs.current[wp.id] = el)}
-                        className={`card waypoint-card ${activeWaypoint === wp.id ? 'active' : ''} ${completedWaypoints[wp.id] ? 'completed' : ''}`}
-                    >
-                        <div className="waypoint-card-header">
-                            <div className="waypoint-number">Waypoint {wp.id}</div>
-                            <h3 className="waypoint-title">{wp.title}</h3>
+                {!devicePref ? (
+                    <div className="card text-center" style={{ padding: 'var(--space-4xl)', opacity: 0.5 }}>
+                        <div className="mb-lg">
+                            <PirateShip />
                         </div>
+                        <h3>Voyage Locked</h3>
+                        <p className="text-muted">Please select your device preference to begin this journey.</p>
+                        <button className="btn btn-primary mt-lg" onClick={() => setShowDeviceModal(true)}>
+                            Open Selector
+                        </button>
+                    </div>
+                ) : (
+                    <>
+                        {waypointsWithPref.map((wp) => (
+                            <div
+                                key={wp.id}
+                                id={`waypoint-${wp.id}`}
+                                ref={(el) => (waypointRefs.current[wp.id] = el)}
+                                className={`card waypoint-card ${activeWaypoint === wp.id ? 'active' : ''} ${completedWaypoints[wp.id] ? 'completed' : ''}`}
+                            >
+                                <div className="waypoint-card-header">
+                                    <div className="waypoint-number">Waypoint {wp.id}</div>
+                                    <h3 className="waypoint-title">{wp.title}</h3>
+                                </div>
 
-                        <div className="waypoint-body">
-                            <div className="waypoint-goal">
-                                <strong>Goal:</strong> {wp.goal}
-                            </div>
+                                <div className="waypoint-body">
+                                    <div className="waypoint-goal">
+                                        <strong>Goal:</strong> {wp.goal}
+                                    </div>
 
-                            <ul className="waypoint-points">
-                                {wp.points.map((point, i) => (
-                                    <li key={i}>{point}</li>
-                                ))}
-                            </ul>
+                                    <ul className="waypoint-points">
+                                        {wp.points.map((point, i) => (
+                                            <li key={i}>{point}</li>
+                                        ))}
+                                    </ul>
 
-                            <div className="waypoint-action">
-                                <strong>Action:</strong> {wp.action}
-                                {wp.actionLink && (
-                                    <div className="action-links-container">
-                                        {Array.isArray(wp.actionLink) ? (
-                                            wp.actionLink.map((link, idx) => (
-                                                <a key={idx} href={link.url} target="_blank" rel="noopener noreferrer" className="action-link">
-                                                    {link.label}
-                                                </a>
-                                            ))
-                                        ) : (
-                                            <a href={wp.actionLink} target="_blank" rel="noopener noreferrer" className="action-link">
-                                                {wp.actionLink.includes('coinbase.com/join') ? 'coinbase.com/join' : wp.actionLink.replace('https://', '').replace('www.', '').split('/')[0]}
-                                            </a>
+                                    <div className="waypoint-action">
+                                        <strong>Action:</strong> {wp.action}
+                                        {wp.actionLink && (
+                                            <div className="action-links-container">
+                                                {Array.isArray(wp.actionLink) ? (
+                                                    wp.actionLink.map((link, idx) => (
+                                                        <a key={idx} href={link.url} target="_blank" rel="noopener noreferrer" className="action-link">
+                                                            {link.label}
+                                                        </a>
+                                                    ))
+                                                ) : (
+                                                    <a href={wp.actionLink} target="_blank" rel="noopener noreferrer" className="action-link">
+                                                        {wp.actionLink.includes('coinbase.com/join') ? 'coinbase.com/join' : wp.actionLink.replace('https://', '').replace('www.', '').split('/')[0]}
+                                                    </a>
+                                                )}
+                                            </div>
                                         )}
                                     </div>
-                                )}
+
+                                    <label className="waypoint-checkbox">
+                                        <input
+                                            type="checkbox"
+                                            checked={!!completedWaypoints[wp.id]}
+                                            onChange={(e) => handleCheckbox(wp.id, e.target.checked)}
+                                        />
+                                        <span className="waypoint-checkbox-label">Mark complete</span>
+                                    </label>
+                                </div>
                             </div>
+                        ))}
 
-                            <label className="waypoint-checkbox">
-                                <input
-                                    type="checkbox"
-                                    checked={!!completedWaypoints[wp.id]}
-                                    onChange={(e) => handleCheckbox(wp.id, e.target.checked)}
-                                />
-                                <span className="waypoint-checkbox-label">Mark complete</span>
-                            </label>
-                        </div>
-                    </div>
-                ))}
+                        {isFullyComplete && (
+                            <div className="card voyage-complete-card">
+                                <h3>Voyage Complete</h3>
+                                <p>You&apos;ve mastered the foundations of {chain.toUpperCase()} wallet trading.</p>
 
-                {isFullyComplete && (
-                    <div className="card voyage-complete-card">
-                        <h3>Voyage Complete</h3>
-                        <p>You&apos;ve mastered the foundations of {chain.toUpperCase()} wallet trading.</p>
+                                <div className="complete-actions" style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-md)', justifyContent: 'center', marginTop: 'var(--space-xl)' }}>
+                                    <button onClick={handleShare} className="btn btn-primary" style={{ background: 'var(--gold-500)', color: 'var(--navy-950)', border: 'none', fontWeight: '800' }}>
+                                        <span style={{ marginRight: '8px' }}>𝕏</span> Share on X
+                                    </button>
 
-                        <div className="complete-actions" style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-md)', justifyContent: 'center', marginTop: 'var(--space-xl)' }}>
-                            <button onClick={handleShare} className="btn btn-primary" style={{ background: 'var(--gold-500)', color: 'var(--navy-950)', border: 'none', fontWeight: '800' }}>
-                                <span style={{ marginRight: '8px' }}>𝕏</span> Share on X
-                            </button>
-
-                            <Link href="/" className="btn btn-outline" style={{ minWidth: '150px' }}>
-                                Back to Home
-                            </Link>
-                        </div>
-                    </div>
+                                    <Link href="/" className="btn btn-outline" style={{ minWidth: '150px' }}>
+                                        Back to Home
+                                    </Link>
+                                </div>
+                            </div>
+                        )}
+                    </>
                 )}
             </div>
         </div>

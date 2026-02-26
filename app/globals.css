@@ -1785,3 +1785,32 @@ input {
   gap: var(--space-sm);
   margin-top: var(--space-sm);
 }
+
+.device-option {
+  transition: all var(--transition-fast);
+  border: 1px solid var(--border-subtle);
+}
+
+.device-option:hover {
+  border-color: var(--teal-400);
+  background: rgba(45, 212, 191, 0.05);
+}
+
+.device-option.selected {
+  border-color: var(--teal-400);
+  background: rgba(45, 212, 191, 0.1);
+  box-shadow: 0 0 15px rgba(45, 212, 191, 0.1);
+}
+
+.device-option input[type="radio"] {
+  accent-color: var(--teal-400);
+  width: 18px;
+  height: 18px;
+}
+
+.btn-disabled {
+  opacity: 0.5;
+  cursor: not-allowed !important;
+  pointer-events: none;
+  filter: grayscale(1);
+}
