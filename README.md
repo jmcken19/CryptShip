@@ -1,88 +1,63 @@
-# Cryptship.com
+# Cryptship
 
 **Shipping users to the blockchain — safely and confidently.**
 
 Guided onboarding voyages for SOL, ETH, and BTC. Build wallet fundamentals, learn how to read the network, and move safely.
 
-## Quick Start
+## Problem
 
-```bash
-# 1. Install dependencies
-npm install
+People new to crypto often don't know where to start, which steps actually matter, or how to safely set up and fund a wallet without falling for common pitfalls.
 
-# 2. Set up environment
-cp .env.example .env.local
-# Edit .env.local with your values (defaults work for dev)
+## Solution
 
-# 3. Run development server
-npm run dev
+Cryptship guides users through simple, curated onboarding voyages for Solana (SOL), Ethereum (ETH), and Bitcoin (BTC). It helps new users set up and fund their first self-custody or exchange wallets so they can trade with more confidence and safety.
 
-# 4. Open http://localhost:3000
-```
+## Disclaimer
+
+Cryptship does not provide trading or investment advice.
+Cryptship is not financial advice.
+Cryptship focuses on wallet setup and safe on-chain workflows so users have the freedom to trade on their own responsibility.
 
 ## Tech Stack
 
-- **Next.js 14** (App Router) — routing, SSR, API routes
-- **React 18** — UI components
-- **Chart.js** — price charts
-- **SQLite** (better-sqlite3) — auth & progress persistence
-- **bcryptjs** — password hashing
-- **jsonwebtoken** — JWT session tokens
-- **Vanilla CSS** — ocean-themed design system
+- **Next.js (App Router)** — Core framework and routing
+- **React** — UI components and state management
+- **Vanilla CSS** — Custom design system focused on a minimal ocean theme
+- **Serverless API Routes** — Market data snapshot and news aggregation fallback system
+- **LocalStorage** — Progress persistence and device preferences (no database required)
 
-## Environment Variables
+## How It Works
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `JWT_SECRET` | `cryptship-dev-secret-...` | Secret for JWT signing |
-| `DATABASE_PATH` | `./cryptship.db` | Path to SQLite database |
-| `COINGECKO_BASE_URL` | `https://api.coingecko.com/api/v3` | CoinGecko API base URL |
+- **Market Data**: Spot prices and headlines are fetched via `/api/*` endpoints with primary/fallback provider logic and client-side caching to maintain freshness while respecting rate limits.
+- **Device Modes**: Users select between **Mobile**, **Web**, or **Both**. This filters the onboarding instructions and links to ensure relevance (e.g., App Store vs Browser Extension).
+- **Voyages**: Each chain features a 6-waypoint voyage with a visual "Sea Route" rail, scrollspy navigation, auto-advance, and progress reset options.
 
-## Features
+## Local Development
 
-- **Market data** — live prices for BTC, ETH, SOL with 60s polling
-  - *Dev test:* `curl http://localhost:3000/api/market-snapshot`
-  - *Dev test:* `curl http://localhost:3000/api/news?scope=global`
-- **Price charts** — 24H / 7D / 30D / 1Y toggleable line charts
-- **Quick analytics** — chain-specific metrics (gas, fees, mempool)
-- **Onboarding voyages** — 8 waypoints per chain with scrollspy rail
-- **Auth** — email + password registration and login
-- **Progress tracking** — persisted per chain, per waypoint
-- **Responsive** — mobile-first design
-- **Ocean theme** — animated gradient background, wave effects
+### Quickstart
 
-## Project Structure
+1. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-```
-app/                    # Next.js App Router pages
-├── api/                # API routes (market, auth, progress)
-├── sol/eth/btc/        # Chain pages
-├── signin/             # Auth page
-├── disclaimer/         # Legal page
-components/             # React components
-context/                # Auth context
-data/                   # Config, waypoints, headlines
-lib/                    # Database setup
-```
+2. **Set up environment**
+   ```bash
+   cp .env.example .env.local
+   ```
+   *Edit `.env.local` with your own API keys if needed (defaults work for basic development).*
+
+3. **Run development server**
+   ```bash
+   npm run dev
+   ```
+
+4. **Open http://localhost:3000**
 
 ## Deployment
 
-Build for production:
-```bash
-npm run build
-npm start
-```
+### Vercel
 
-> **Note:** `better-sqlite3` requires native compilation. For serverless platforms, consider switching to a cloud database.
-
-## Deploy to Vercel
-
-The easiest way to deploy your Next.js app is to use the Vercel Platform.
-
-1. **Import your GitHub repo into Vercel.**
-2. **Set environment variables from `.env.example`** in the Vercel dashboard.
-3. **Deploy** your project.
-
-## License
-
-Educational project. Not financial advice.
+1. Import the GitHub repository into Vercel.
+2. Set environment variables from your `.env.local` in the Vercel dashboard.
+3. Deploy.
