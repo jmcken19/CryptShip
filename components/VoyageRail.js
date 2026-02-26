@@ -112,7 +112,7 @@ export default function VoyageRail({ chain, waypoints }) {
     };
 
     // Device Preference
-    const [devicePref, setDevicePref] = useState(null); // 'mobile', 'computer', 'both'
+    const [devicePref, setDevicePref] = useState(null); // 'mobile', 'web', 'both'
     const [showDeviceModal, setShowDeviceModal] = useState(false);
 
     useEffect(() => {
@@ -165,6 +165,8 @@ export default function VoyageRail({ chain, waypoints }) {
 
     const isFullyComplete = Object.values(completedWaypoints).filter(Boolean).length === waypoints.length;
 
+    const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+
     return (
         <div className="voyage-layout">
             {/* Toast */}
@@ -193,21 +195,21 @@ export default function VoyageRail({ chain, waypoints }) {
 
                         <div className="device-options" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)', marginBottom: 'var(--space-xl)' }}>
                             <label className="device-option card" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 'var(--space-md)', padding: 'var(--space-md)' }}>
-                                <input type="radio" name="device" onChange={() => handleSetDevice('mobile')} />
+                                <input type="radio" name="device" checked={devicePref === 'mobile'} onChange={() => handleSetDevice('mobile')} />
                                 <div>
                                     <div style={{ fontWeight: '700' }}>Mobile</div>
                                     <div className="text-muted" style={{ fontSize: '0.75rem' }}>Phone or Tablet</div>
                                 </div>
                             </label>
                             <label className="device-option card" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 'var(--space-md)', padding: 'var(--space-md)' }}>
-                                <input type="radio" name="device" onChange={() => handleSetDevice('computer')} />
+                                <input type="radio" name="device" checked={devicePref === 'web'} onChange={() => handleSetDevice('web')} />
                                 <div>
-                                    <div style={{ fontWeight: '700' }}>Computer</div>
+                                    <div style={{ fontWeight: '700' }}>Web</div>
                                     <div className="text-muted" style={{ fontSize: '0.75rem' }}>Browser extension</div>
                                 </div>
                             </label>
                             <label className="device-option card" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 'var(--space-md)', padding: 'var(--space-md)' }}>
-                                <input type="radio" name="device" onChange={() => handleSetDevice('both')} />
+                                <input type="radio" name="device" checked={devicePref === 'both'} onChange={() => handleSetDevice('both')} />
                                 <div>
                                     <div style={{ fontWeight: '700' }}>Both</div>
                                     <div className="text-muted" style={{ fontSize: '0.75rem' }}>Synced setup</div>
@@ -243,11 +245,16 @@ export default function VoyageRail({ chain, waypoints }) {
             {/* Desktop Rail */}
             <aside className="voyage-rail" ref={railRef}>
                 <div className="rail-header">
-                    <div className="rail-title">Sea Route</div>
-                    <div style={{ display: 'flex', gap: 'var(--space-md)' }}>
-                        <button className="btn-reset-voyage" onClick={() => setShowDeviceModal(true)} style={{ textDecoration: 'none', fontSize: '0.65rem' }}>
-                            Change device
-                        </button>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                        <div className="rail-title">Sea Route</div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span className="mode-badge">Mode: {devicePref ? capitalize(devicePref) : 'Both'}</span>
+                            <button className="change-link" onClick={() => setShowDeviceModal(true)}>
+                                Change
+                            </button>
+                        </div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'flex-start' }}>
                         <button className="btn-reset-voyage" onClick={() => setShowResetModal(true)} style={{ fontSize: '0.65rem' }}>
                             Start over
                         </button>
@@ -342,9 +349,19 @@ export default function VoyageRail({ chain, waypoints }) {
                             <div className="waypoint-action">
                                 <strong>Action:</strong> {wp.action}
                                 {wp.actionLink && (
-                                    <a href={wp.actionLink} target="_blank" rel="noopener noreferrer" className="action-link">
-                                        {wp.actionLink.includes('coinbase.com/join') ? 'coinbase.com/join' : wp.actionLink.replace('https://', '').replace('www.', '')}
-                                    </a>
+                                    <div className="action-links-container">
+                                        {Array.isArray(wp.actionLink) ? (
+                                            wp.actionLink.map((link, idx) => (
+                                                <a key={idx} href={link.url} target="_blank" rel="noopener noreferrer" className="action-link">
+                                                    {link.label}
+                                                </a>
+                                            ))
+                                        ) : (
+                                            <a href={wp.actionLink} target="_blank" rel="noopener noreferrer" className="action-link">
+                                                {wp.actionLink.includes('coinbase.com/join') ? 'coinbase.com/join' : wp.actionLink.replace('https://', '').replace('www.', '').split('/')[0]}
+                                            </a>
+                                        )}
+                                    </div>
                                 )}
                             </div>
 
