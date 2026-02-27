@@ -9,8 +9,24 @@ const coinMap = {
     btc: 'bitcoin',
 };
 
-function generateFallbackData(days) {
-    const points = days <= 1 ? 24 : days <= 7 ? 7 * 24 : days <= 30 ? 30 : 365;
+function generateFallbackData(period) {
+    let days = 1;
+    let points = 24;
+
+    if (period === '1h') {
+        days = 1 / 24;
+        points = 12;
+    } else if (period === '6h') {
+        days = 6 / 24;
+        points = 72;
+    } else if (period === '24h') {
+        days = 1;
+        points = 288;
+    } else if (period === '7d') {
+        days = 7;
+        points = 168;
+    }
+
     const data = [];
     const now = Date.now();
     const interval = (days * 24 * 60 * 60 * 1000) / points;
@@ -27,9 +43,12 @@ function generateFallbackData(days) {
 export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const coin = searchParams.get('coin') || 'btc';
-    const days = parseInt(searchParams.get('days') || '7', 10);
+    const period = searchParams.get('period') || '6h';
 
-    const cacheKey = `${coin}-${days}`;
+    let daysToFetch = 1;
+    if (period === '7d') daysToFetch = 7;
+
+    const cacheKey = `${coin}-${period}`;
     const cached = chartCache.get(cacheKey);
     if (cached && (Date.now() - cached.timestamp) < CACHE_DURATION) {
         return NextResponse.json(cached.data);
@@ -39,7 +58,7 @@ export async function GET(request) {
         const coingeckoId = coinMap[coin] || coin;
         const baseUrl = process.env.COINGECKO_BASE_URL || 'https://api.coingecko.com/api/v3';
         const res = await fetch(
-            `${baseUrl}/coins/${coingeckoId}/market_chart?vs_currency=usd&days=${days}`,
+            `${baseUrl}/coins/${coingeckoId}/market_chart?vs_currency=usd&days=${daysToFetch}`,
             {
                 headers: { 'Accept': 'application/json' },
                 next: { revalidate: 300 },
@@ -47,16 +66,30 @@ export async function GET(request) {
         );
 
         if (!res.ok) {
-            const fallback = { prices: generateFallbackData(days) };
+            const fallback = { prices: generateFallbackData(period) };
             return NextResponse.json(fallback);
         }
 
         const data = await res.json();
+
+        let prices = data.prices;
+        if (prices) {
+            const now = Date.now();
+            if (period === '1h') {
+                const cutoff = now - 60 * 60 * 1000;
+                prices = prices.filter(p => p[0] >= cutoff);
+            } else if (period === '6h') {
+                const cutoff = now - 6 * 60 * 60 * 1000;
+                prices = prices.filter(p => p[0] >= cutoff);
+            }
+            data.prices = prices;
+        }
+
         chartCache.set(cacheKey, { data, timestamp: Date.now() });
         return NextResponse.json(data);
     } catch (error) {
         console.error('Chart data fetch error:', error.message);
-        const fallback = { prices: generateFallbackData(days) };
+        const fallback = { prices: generateFallbackData(period) };
         return NextResponse.json(fallback);
     }
 }

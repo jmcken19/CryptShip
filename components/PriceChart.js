@@ -15,21 +15,21 @@ import { Line } from 'react-chartjs-2';
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Filler, Tooltip);
 
 const PERIODS = [
-    { label: '24H', days: 1 },
-    { label: '7D', days: 7 },
-    { label: '30D', days: 30 },
-    { label: '1Y', days: 365 },
+    { label: '1H', value: '1h' },
+    { label: '6H', value: '6h' },
+    { label: '24H', value: '24h' },
+    { label: '7D', value: '7d' },
 ];
 
 export default function PriceChart({ coin, color }) {
-    const [period, setPeriod] = useState(1); // Default to 24H
+    const [period, setPeriod] = useState('6h'); // Default to 6H
     const [chartData, setChartData] = useState(null);
     const [loading, setLoading] = useState(true);
     const chartRef = useRef(null);
 
     useEffect(() => {
         setLoading(true);
-        fetch(`/api/chart-data?coin=${coin}&days=${period}`)
+        fetch(`/api/chart-data?coin=${coin}&period=${period}`)
             .then((r) => r.json())
             .then((data) => {
                 if (data.prices) {
@@ -47,13 +47,14 @@ export default function PriceChart({ coin, color }) {
 
     const data = chartData
         ? {
-            labels: chartData.map(([t]) =>
-                new Date(t).toLocaleDateString('en-US', {
+            labels: chartData.map(([t]) => {
+                const isShortTime = period === '1h' || period === '6h' || period === '24h';
+                return new Date(t).toLocaleDateString('en-US', {
                     month: 'short',
                     day: 'numeric',
-                    ...(period <= 1 && { hour: '2-digit', minute: '2-digit' }),
-                })
-            ),
+                    ...(isShortTime && { hour: '2-digit', minute: '2-digit' }),
+                });
+            }),
             datasets: [
                 {
                     data: prices,
@@ -124,10 +125,10 @@ export default function PriceChart({ coin, color }) {
             <div className="chart-controls" style={{ marginBottom: '8px', display: 'flex', justifyContent: 'flex-end', gap: '8px', zIndex: 5 }}>
                 {PERIODS.map((p) => (
                     <button
-                        key={p.days}
-                        className={`chart-toggle ${period === p.days ? 'active' : ''}`}
-                        onClick={() => setPeriod(p.days)}
-                        style={{ padding: '4px 8px', fontSize: '0.75rem', borderRadius: '4px', border: '1px solid rgba(255,255,255,0.1)', background: period === p.days ? 'rgba(255,255,255,0.1)' : 'transparent', color: 'white', cursor: 'pointer' }}
+                        key={p.value}
+                        className={`chart-toggle ${period === p.value ? 'active' : ''}`}
+                        onClick={() => setPeriod(p.value)}
+                        style={{ padding: '4px 8px', fontSize: '0.75rem', borderRadius: '4px', border: '1px solid rgba(255,255,255,0.1)', background: period === p.value ? 'rgba(255,255,255,0.1)' : 'transparent', color: 'white', cursor: 'pointer' }}
                     >
                         {p.label}
                     </button>

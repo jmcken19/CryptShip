@@ -1207,10 +1207,12 @@ input {
   position: relative;
   width: 24px;
   height: 24px;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 5;
+  overflow: visible;
 }
 
 .island-icon {
@@ -1264,6 +1266,8 @@ input {
   display: flex;
   flex-direction: column;
   line-height: 1.2;
+  padding-left: var(--space-md);
+  flex-grow: 1;
 }
 
 .waypoint-info .wp-id {
@@ -1817,7 +1821,7 @@ input {
 
 /* Compact Chain Features */
 .chart-compact {
-  height: 240px !important;
+  height: 360px !important;
   margin-bottom: 16px;
   /* 16px gap to analytics */
   position: relative;

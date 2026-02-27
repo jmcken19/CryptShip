@@ -313,7 +313,7 @@ export default function VoyageRail({ chain, waypoints }) {
                                 onClick={() => devicePref && scrollToWaypoint(wp.id)}
                                 style={{ top: `${topPos}%`, cursor: devicePref ? 'pointer' : 'not-allowed' }}
                             >
-                                <div className="waypoint-marker" style={{ left: '12px' }}>
+                                <div className="waypoint-marker">
                                     <div className={`waypoint-dot ${activeWaypoint === wp.id ? 'active' : ''} ${completedWaypoints[wp.id] ? 'completed' : ''}`} />
                                 </div>
                                 <div className="waypoint-info">
