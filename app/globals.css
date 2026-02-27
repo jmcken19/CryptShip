@@ -1814,3 +1814,63 @@ input {
   pointer-events: none;
   filter: grayscale(1);
 }
+
+/* Chain Page 2-Column Layout */
+.chain-page-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-2xl);
+  align-items: start;
+}
+
+@media (min-width: 1024px) {
+  .chain-page-grid {
+    grid-template-columns: 1fr 360px;
+  }
+}
+
+.market-panel-side {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+}
+
+@media (min-width: 1024px) {
+  .market-panel-side {
+    position: sticky;
+    top: calc(var(--nav-height) + var(--space-xl));
+    max-height: calc(100vh - var(--nav-height) - var(--space-2xl));
+    overflow-y: auto;
+    padding-right: var(--space-sm);
+  }
+
+  /* Custom scrollbar for sticky panel */
+  .market-panel-side::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .market-panel-side::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .market-panel-side::-webkit-scrollbar-thumb {
+    background: var(--navy-700);
+    border-radius: 4px;
+  }
+}
+
+.chain-hero-min {
+  margin-bottom: var(--space-xl);
+}
+
+.chain-hero-min h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: var(--space-xs);
+}
+
+.chain-hero-min .chain-description {
+  color: var(--text-muted);
+  font-size: 1rem;
+  max-width: 600px;
+}

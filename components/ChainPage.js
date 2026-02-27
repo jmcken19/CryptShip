@@ -36,48 +36,56 @@ export default function ChainPage({ chainId }) {
 
     return (
         <div className="page-container">
-            {/* A) Quick Overview */}
-            <section className="chain-header section">
-                <h1 style={{ color: chain.color }}>{chain.name}</h1>
-                <p className="chain-description">{chain.description}</p>
+            <div className="chain-page-grid">
+                {/* 1. MAIN COLUMN: Voyage Focus */}
+                <div className="voyage-main-column">
+                    <section className="chain-hero-min">
+                        <h1 style={{ color: chain.color }}>{chain.name} Wallet Trading Steps</h1>
+                        <p className="chain-description">
+                            Complete all 6 waypoints to set up and safely fund your {chain.name} wallet for on-chain trading.
+                        </p>
+                    </section>
 
-                <div className="chain-price-block" style={{ marginTop: '1.5rem' }}>
-                    <span className="chain-price">
-                        <AnimatedValue value={marketData ? marketData.price : null} formatter={marketData ? formatPrice : () => '—'} />
-                    </span>
-                    <div className="chain-price-changes">
-                        <span className={`chain-price-change ${marketData?.change24h >= 0 ? 'change-positive' : 'change-negative'}`}>
-                            <small>24h</small> {marketData ? formatChange(marketData.change24h) : '—'}
-                        </span>
-                        <span className={`chain-price-change ${marketData?.change7d >= 0 ? 'change-positive' : 'change-negative'}`}>
-                            <small>7d</small> {marketData ? formatChange(marketData.change7d) : '—'}
-                        </span>
+                    <section className="voyage-section">
+                        <VoyageRail chain={chainId} waypoints={waypoints} />
+                    </section>
+                </div>
+
+                {/* 2. SIDE COLUMN: Market Panel */}
+                <aside className="market-panel-side">
+                    {/* Price Block */}
+                    <div className="card market-snapshot-mini">
+                        <div className="chain-price-block">
+                            <span className="chain-price" style={{ fontSize: '1.5rem' }}>
+                                <AnimatedValue value={marketData ? marketData.price : null} formatter={marketData ? formatPrice : () => '—'} />
+                            </span>
+                            <div className="chain-price-changes">
+                                <span className={`chain-price-change ${marketData?.change24h >= 0 ? 'change-positive' : 'change-negative'}`}>
+                                    <small>24h</small> {marketData ? formatChange(marketData.change24h) : '—'}
+                                </span>
+                                <span className={`chain-price-change ${marketData?.change7d >= 0 ? 'change-positive' : 'change-negative'}`}>
+                                    <small>7d</small> {marketData ? formatChange(marketData.change7d) : '—'}
+                                </span>
+                            </div>
+                        </div>
+                        <p className="text-muted mt-sm" style={{ fontSize: '0.7rem' }}>
+                            Prices update periodically and may not reflect real-time market movements.
+                        </p>
                     </div>
-                </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginTop: '0.75rem', marginBottom: '1.5rem', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                    <span>Prices update periodically and may not reflect real-time market movements.</span>
-                </div>
+                    {/* Chart */}
+                    <div className="card chart-mini">
+                        <PriceChart coin={chainId} color={chain.color} />
+                    </div>
 
-                <PriceChart coin={chainId} color={chain.color} />
-            </section>
+                    {/* Analytics */}
+                    <QuickAnalytics chainId={chainId} chainConfig={chain} />
 
-            {/* B) Quick Analytics */}
-            <QuickAnalytics chainId={chainId} chainConfig={chain} />
-
-            {/* C) Headlines */}
-            <ChainHeadlines chainId={chainId} />
-
-            {/* D) Onboarding Voyage */}
-            <section className="section">
-                <h2 className="section-title">
-                    {chain.name} Wallet Trading Steps
-                </h2>
-                <p className="text-muted mb-lg" style={{ fontSize: '0.9rem' }}>
-                    Complete all 6 waypoints to set up and safely fund your wallet for trading.
-                </p>
-                <VoyageRail chain={chainId} waypoints={waypoints} />
-            </section>
+                    {/* Headlines */}
+                    <ChainHeadlines chainId={chainId} />
+                </aside>
+            </div>
         </div>
     );
 }
+
