@@ -84,7 +84,7 @@ async function fetchCoinGeckoPrices() {
 
         if (result.sol) { result.sol.activity = 'High'; result.sol.feeLevel = 'Low'; }
         if (result.eth) { result.eth.gasIndicator = 'Medium'; result.eth.baseFee = 'Moderate'; }
-        if (result.btc) { result.btc.mempoolLevel = 'Normal'; result.btc.feeRate = 'Low'; }
+        if (result.btc) { result.btc.mempoolLevel = 'Normal'; }
 
         return result;
     } finally {

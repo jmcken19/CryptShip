@@ -36,58 +36,35 @@ export default function ChainPage({ chainId }) {
 
     return (
         <div className="page-container">
-            {/* 1. Header & Price Snapshot */}
+            {/* Header Section */}
             <section className="chain-hero-header">
-                <h1 style={{ color: chain.color }}>{chain.name} Wallet Trading Steps</h1>
+                <h1 style={{ color: chain.color }}>{chain.name} Wallet Voyage</h1>
                 <p className="chain-description">
-                    Complete all 6 waypoints to set up and safely fund your {chain.name} wallet for on-chain trading.
+                    Follow the Sea Route to safely navigate the {chain.name} ecosystem.
+                    Complete all waypoints to set up and fund your wallet for on-chain trading.
                 </p>
 
-                <div className="chain-price-block" style={{ marginTop: '1.5rem', marginBottom: '1.5rem' }}>
-                    <span className="chain-price" style={{ fontSize: '2.5rem' }}>
+                <div className="chain-price-block" style={{ marginTop: '1rem' }}>
+                    <span className="chain-price" style={{ fontSize: '1.5rem', fontWeight: '700' }}>
                         <AnimatedValue value={marketData ? marketData.price : null} formatter={marketData ? formatPrice : () => '—'} />
                     </span>
-                    <div className="chain-price-changes">
-                        <span className={`chain-price-change ${marketData?.change24h >= 0 ? 'change-positive' : 'change-negative'}`}>
-                            <small>24h</small> {marketData ? formatChange(marketData.change24h) : '—'}
-                        </span>
-                        <span className={`chain-price-change ${marketData?.change7d >= 0 ? 'change-positive' : 'change-negative'}`}>
-                            <small>7d</small> {marketData ? formatChange(marketData.change7d) : '—'}
-                        </span>
-                    </div>
+                    <span className={`chain-price-change ${marketData?.change24h >= 0 ? 'change-positive' : 'change-negative'}`} style={{ marginLeft: '1rem', fontSize: '0.9rem' }}>
+                        {marketData ? formatChange(marketData.change24h) : '—'} (24h)
+                    </span>
                 </div>
             </section>
 
-            {/* 2. Full Width Chart Container */}
-            <section className="full-width-chart-container card">
+            {/* Compact Chart Area */}
+            <section className="chart-compact card">
                 <PriceChart coin={chainId} color={chain.color} />
-                <p className="text-muted mt-sm" style={{ fontSize: '0.75rem', textAlign: 'center' }}>
-                    Prices update periodically and may not reflect real-time market movements.
-                </p>
             </section>
 
-            {/* 3. Three-Column Expanded Grid */}
-            <div className="chain-page-grid">
-                {/* Left Margin: Analytics */}
-                <aside className="chain-rail-left">
-                    <div className="rail-label" style={{ fontSize: '0.65rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em', opacity: 0.5, marginBottom: 'var(--space-xs)' }}>
-                        Analytics
-                    </div>
-                    <QuickAnalytics chainId={chainId} chainConfig={chain} isMini />
-                </aside>
+            {/* Horizontal Analytics directly below chart */}
+            <QuickAnalytics chainId={chainId} chainConfig={chain} isHorizontal={true} />
 
-                {/* Center Main: Voyage */}
-                <div className="voyage-center-column">
-                    <VoyageRail chain={chainId} waypoints={waypoints} />
-                </div>
-
-                {/* Right Margin: Headlines */}
-                <aside className="chain-rail-right">
-                    <div className="rail-label" style={{ fontSize: '0.65rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em', opacity: 0.5, marginBottom: 'var(--space-xs)' }}>
-                        Latest News
-                    </div>
-                    <ChainHeadlines chainId={chainId} isMini />
-                </aside>
+            {/* Main Feature: Sea Route Voyage (Full Width) */}
+            <div className="voyage-focus-container">
+                <VoyageRail chain={chainId} waypoints={waypoints} />
             </div>
         </div>
     );

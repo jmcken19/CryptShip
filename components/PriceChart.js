@@ -22,7 +22,7 @@ const PERIODS = [
 ];
 
 export default function PriceChart({ coin, color }) {
-    const [period, setPeriod] = useState(7);
+    const [period, setPeriod] = useState(1); // Default to 24H
     const [chartData, setChartData] = useState(null);
     const [loading, setLoading] = useState(true);
     const chartRef = useRef(null);
@@ -40,6 +40,11 @@ export default function PriceChart({ coin, color }) {
             .finally(() => setLoading(false));
     }, [coin, period]);
 
+    // Calculate Y-axis padding for dynamic scaling
+    const prices = chartData ? chartData.map(([, p]) => p) : [];
+    const minPrice = prices.length ? Math.min(...prices) * 0.995 : 0;
+    const maxPrice = prices.length ? Math.max(...prices) * 1.005 : 0;
+
     const data = chartData
         ? {
             labels: chartData.map(([t]) =>
@@ -51,7 +56,7 @@ export default function PriceChart({ coin, color }) {
             ),
             datasets: [
                 {
-                    data: chartData.map(([, p]) => p),
+                    data: prices,
                     borderColor: color,
                     backgroundColor: `${color}15`,
                     fill: true,
@@ -101,6 +106,8 @@ export default function PriceChart({ coin, color }) {
             y: {
                 display: true,
                 position: 'right',
+                min: minPrice > 0 ? minPrice : undefined,
+                max: maxPrice > 0 ? maxPrice : undefined,
                 grid: { color: 'rgba(255,255,255,0.03)' },
                 ticks: {
                     color: '#7a8fa3',
@@ -113,19 +120,20 @@ export default function PriceChart({ coin, color }) {
     };
 
     return (
-        <div>
-            <div className="chart-controls">
+        <div style={{ height: '100%', display: 'flex', flexDirection: 'column', position: 'relative' }}>
+            <div className="chart-controls" style={{ marginBottom: '8px', display: 'flex', justifyContent: 'flex-end', gap: '8px', zIndex: 5 }}>
                 {PERIODS.map((p) => (
                     <button
                         key={p.days}
                         className={`chart-toggle ${period === p.days ? 'active' : ''}`}
                         onClick={() => setPeriod(p.days)}
+                        style={{ padding: '4px 8px', fontSize: '0.75rem', borderRadius: '4px', border: '1px solid rgba(255,255,255,0.1)', background: period === p.days ? 'rgba(255,255,255,0.1)' : 'transparent', color: 'white', cursor: 'pointer' }}
                     >
                         {p.label}
                     </button>
                 ))}
             </div>
-            <div className="chart-container">
+            <div className="chart-container" style={{ flex: 1, position: 'relative', width: '100%', minHeight: 0, overflow: 'hidden' }}>
                 {loading ? (
                     <div className="loading-shimmer" style={{ width: '100%', height: '100%' }} />
                 ) : data ? (

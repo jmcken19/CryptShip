@@ -1815,81 +1815,109 @@ input {
   filter: grayscale(1);
 }
 
-/* Chain Page 3-Column Expanded Layout */
-.chain-page-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--space-xl);
-  align-items: start;
+/* Compact Chain Features */
+.chart-compact {
+  height: 240px !important;
+  margin-bottom: 16px;
+  /* 16px gap to analytics */
+  position: relative;
+  overflow: hidden;
 }
 
-@media (min-width: 1200px) {
-  .chain-page-grid {
-    grid-template-columns: 240px 1fr 240px;
-    gap: var(--space-2xl);
+.analytics-horizontal {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-sm);
+  margin-bottom: 32px;
+  /* 32px gap to voyage */
+}
+
+@media (min-width: 768px) {
+  .analytics-horizontal {
+    grid-template-columns: repeat(4, 1fr);
   }
 }
 
-.chain-rail-left,
-.chain-rail-right {
+@media (min-width: 1024px) {
+  .analytics-horizontal {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  }
+}
+
+.analytics-card-mini {
+  padding: var(--space-sm) var(--space-md) !important;
+  background: rgba(15, 23, 42, 0.3) !important;
+  border-color: var(--border-subtle) !important;
   display: flex;
   flex-direction: column;
-  gap: var(--space-xl);
+  justify-content: center;
 }
 
-@media (min-width: 1200px) {
-
-  .chain-rail-left,
-  .chain-rail-right {
-    position: sticky;
-    top: calc(var(--nav-height) + var(--space-xl));
-    max-height: calc(100vh - var(--nav-height) - var(--space-2xl));
-    overflow-y: auto;
-    padding-bottom: var(--space-xl);
-  }
-
-  /* Custom scrollbar for rails */
-  .chain-rail-left::-webkit-scrollbar,
-  .chain-rail-right::-webkit-scrollbar {
-    width: 3px;
-  }
-
-  .chain-rail-left::-webkit-scrollbar-thumb,
-  .chain-rail-right::-webkit-scrollbar-thumb {
-    background: var(--navy-700);
-    border-radius: 4px;
-  }
+.analytics-card-mini .analytics-label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.6;
+  margin-bottom: 2px;
 }
 
-.voyage-center-column {
-  min-width: 0;
-  /* Prevent overflow issues in grid */
-}
-
-/* Reduced prominence for side blocks */
-.rail-card-mini {
-  background: rgba(15, 23, 42, 0.4) !important;
-  border-color: var(--border-subtle) !important;
+.analytics-card-mini .analytics-value {
+  font-size: 1rem;
+  font-weight: 700;
 }
 
 .chain-hero-header {
-  margin-bottom: var(--space-xl);
+  margin-bottom: var(--space-lg);
   max-width: var(--content-max-width);
 }
 
 .chain-hero-header h1 {
-  font-size: 3rem;
+  font-size: 2.25rem;
   font-weight: 800;
   margin-bottom: var(--space-xs);
 }
 
 .chain-hero-header .chain-description {
   color: var(--text-muted);
-  font-size: 1.1rem;
-  max-width: 800px;
+  font-size: 1rem;
+  max-width: 700px;
 }
 
-.full-width-chart-container {
-  margin-bottom: var(--space-2xl);
+.voyage-focus-container {
   width: 100%;
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+}
+
+/* ============================================
+   VOYAGE RAIL DOT MARKERS
+   ============================================ */
+.waypoint-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background-color: var(--teal-700);
+  border: 2px solid var(--navy-900);
+  transition: all var(--transition-md);
+  box-shadow: 0 0 0 2px rgba(45, 212, 191, 0.2);
+}
+
+.waypoint-dot.active {
+  background-color: var(--gold-400);
+  border-color: var(--navy-900);
+  box-shadow: 0 0 12px rgba(245, 166, 35, 0.6);
+  transform: scale(1.2);
+}
+
+.waypoint-dot.completed {
+  background-color: transparent;
+  border: 2px solid var(--teal-400);
+  box-shadow: none;
+}
+
+.check-indicator-inline {
+  color: var(--teal-400);
+  font-size: 0.85rem;
+  font-weight: bold;
+  margin-left: 2px;
 }

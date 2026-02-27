@@ -152,14 +152,7 @@ export default function VoyageRail({ chain, waypoints }) {
         </svg>
     );
 
-    // Island Silhouette SVG
-    const Island = ({ active, completed }) => (
-        <svg viewBox="0 0 24 24" width="32" height="32" className={`island-icon ${active ? 'active' : ''} ${completed ? 'completed' : ''}`}>
-            <path d="M2 20c4-2 6-2 10 0s6 2 10 0v2H2v-2z" fill="currentColor" opacity="0.3" />
-            <path d="M6 18c2-4 6-8 12-4" stroke="currentColor" strokeWidth="1" fill="none" opacity="0.5" />
-            <path d="M12 10c-1-2-3-3-5-1s-1 4 2 5" fill="currentColor" opacity={active ? 1 : 0.6} />
-        </svg>
-    );
+
 
     const handleShare = useCallback(() => {
         const chainName = chain.toUpperCase();
@@ -321,7 +314,7 @@ export default function VoyageRail({ chain, waypoints }) {
                                 style={{ top: `${topPos}%`, cursor: devicePref ? 'pointer' : 'not-allowed' }}
                             >
                                 <div className="waypoint-marker" style={{ left: '12px' }}>
-                                    <Island active={activeWaypoint === wp.id} completed={completedWaypoints[wp.id]} />
+                                    <div className={`waypoint-dot ${activeWaypoint === wp.id ? 'active' : ''} ${completedWaypoints[wp.id] ? 'completed' : ''}`} />
                                 </div>
                                 <div className="waypoint-info">
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
