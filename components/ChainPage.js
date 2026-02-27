@@ -36,56 +36,61 @@ export default function ChainPage({ chainId }) {
 
     return (
         <div className="page-container">
-            <div className="chain-page-grid">
-                {/* 1. MAIN COLUMN: Voyage Focus */}
-                <div className="voyage-main-column">
-                    <section className="chain-hero-min">
-                        <h1 style={{ color: chain.color }}>{chain.name} Wallet Trading Steps</h1>
-                        <p className="chain-description">
-                            Complete all 6 waypoints to set up and safely fund your {chain.name} wallet for on-chain trading.
-                        </p>
-                    </section>
+            {/* 1. Header & Price Snapshot */}
+            <section className="chain-hero-header">
+                <h1 style={{ color: chain.color }}>{chain.name} Wallet Trading Steps</h1>
+                <p className="chain-description">
+                    Complete all 6 waypoints to set up and safely fund your {chain.name} wallet for on-chain trading.
+                </p>
 
-                    <section className="voyage-section">
-                        <VoyageRail chain={chainId} waypoints={waypoints} />
-                    </section>
+                <div className="chain-price-block" style={{ marginTop: '1.5rem', marginBottom: '1.5rem' }}>
+                    <span className="chain-price" style={{ fontSize: '2.5rem' }}>
+                        <AnimatedValue value={marketData ? marketData.price : null} formatter={marketData ? formatPrice : () => '—'} />
+                    </span>
+                    <div className="chain-price-changes">
+                        <span className={`chain-price-change ${marketData?.change24h >= 0 ? 'change-positive' : 'change-negative'}`}>
+                            <small>24h</small> {marketData ? formatChange(marketData.change24h) : '—'}
+                        </span>
+                        <span className={`chain-price-change ${marketData?.change7d >= 0 ? 'change-positive' : 'change-negative'}`}>
+                            <small>7d</small> {marketData ? formatChange(marketData.change7d) : '—'}
+                        </span>
+                    </div>
+                </div>
+            </section>
+
+            {/* 2. Full Width Chart Container */}
+            <section className="full-width-chart-container card">
+                <PriceChart coin={chainId} color={chain.color} />
+                <p className="text-muted mt-sm" style={{ fontSize: '0.75rem', textAlign: 'center' }}>
+                    Prices update periodically and may not reflect real-time market movements.
+                </p>
+            </section>
+
+            {/* 3. Three-Column Expanded Grid */}
+            <div className="chain-page-grid">
+                {/* Left Margin: Analytics */}
+                <aside className="chain-rail-left">
+                    <div className="rail-label" style={{ fontSize: '0.65rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em', opacity: 0.5, marginBottom: 'var(--space-xs)' }}>
+                        Analytics
+                    </div>
+                    <QuickAnalytics chainId={chainId} chainConfig={chain} isMini />
+                </aside>
+
+                {/* Center Main: Voyage */}
+                <div className="voyage-center-column">
+                    <VoyageRail chain={chainId} waypoints={waypoints} />
                 </div>
 
-                {/* 2. SIDE COLUMN: Market Panel */}
-                <aside className="market-panel-side">
-                    {/* Price Block */}
-                    <div className="card market-snapshot-mini">
-                        <div className="chain-price-block">
-                            <span className="chain-price" style={{ fontSize: '1.5rem' }}>
-                                <AnimatedValue value={marketData ? marketData.price : null} formatter={marketData ? formatPrice : () => '—'} />
-                            </span>
-                            <div className="chain-price-changes">
-                                <span className={`chain-price-change ${marketData?.change24h >= 0 ? 'change-positive' : 'change-negative'}`}>
-                                    <small>24h</small> {marketData ? formatChange(marketData.change24h) : '—'}
-                                </span>
-                                <span className={`chain-price-change ${marketData?.change7d >= 0 ? 'change-positive' : 'change-negative'}`}>
-                                    <small>7d</small> {marketData ? formatChange(marketData.change7d) : '—'}
-                                </span>
-                            </div>
-                        </div>
-                        <p className="text-muted mt-sm" style={{ fontSize: '0.7rem' }}>
-                            Prices update periodically and may not reflect real-time market movements.
-                        </p>
+                {/* Right Margin: Headlines */}
+                <aside className="chain-rail-right">
+                    <div className="rail-label" style={{ fontSize: '0.65rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em', opacity: 0.5, marginBottom: 'var(--space-xs)' }}>
+                        Latest News
                     </div>
-
-                    {/* Chart */}
-                    <div className="card chart-mini">
-                        <PriceChart coin={chainId} color={chain.color} />
-                    </div>
-
-                    {/* Analytics */}
-                    <QuickAnalytics chainId={chainId} chainConfig={chain} />
-
-                    {/* Headlines */}
-                    <ChainHeadlines chainId={chainId} />
+                    <ChainHeadlines chainId={chainId} isMini />
                 </aside>
             </div>
         </div>
     );
 }
+
 

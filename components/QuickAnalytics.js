@@ -24,7 +24,7 @@ function formatChange(val) {
     return prefix + num.toFixed(2) + '%';
 }
 
-export default function QuickAnalytics({ chainId, chainConfig }) {
+export default function QuickAnalytics({ chainId, chainConfig, isMini = false }) {
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
 
@@ -49,13 +49,13 @@ export default function QuickAnalytics({ chainId, chainConfig }) {
 
     if (loading) {
         return (
-            <div className="section">
-                <h2 className="section-title">Quick Analytics</h2>
-                <div className="analytics-grid">
-                    {[...Array(6)].map((_, i) => (
-                        <div key={i} className="analytics-item">
-                            <div className="loading-shimmer skeleton" style={{ height: '1rem', marginBottom: '0.5rem', width: '60%' }} />
-                            <div className="loading-shimmer skeleton" style={{ height: '1.5rem', width: '80%' }} />
+            <div className={isMini ? "" : "section"}>
+                {!isMini && <h2 className="section-title">Quick Analytics</h2>}
+                <div className={isMini ? "analytics-mini-list" : "analytics-grid"}>
+                    {[...Array(isMini ? 3 : 6)].map((_, i) => (
+                        <div key={i} className={isMini ? "card rail-card-mini" : "analytics-item"}>
+                            <div className="loading-shimmer skeleton" style={{ height: '0.8rem', marginBottom: '0.4rem', width: '60%' }} />
+                            <div className="loading-shimmer skeleton" style={{ height: '1.2rem', width: '80%' }} />
                         </div>
                     ))}
                 </div>
@@ -89,23 +89,23 @@ export default function QuickAnalytics({ chainId, chainConfig }) {
         );
     }
 
-    const allMetrics = [...baseMetrics, ...chainMetrics];
+    const allMetrics = isMini ? [...baseMetrics.slice(1, 3), ...chainMetrics] : [...baseMetrics, ...chainMetrics];
 
     return (
-        <section className="section">
-            <h2 className="section-title"><span className="icon">◈</span> Quick Analytics</h2>
-            <div className="analytics-grid">
+        <section className={isMini ? "" : "section"}>
+            {!isMini && <h2 className="section-title"><span className="icon">◈</span> Quick Analytics</h2>}
+            <div className={isMini ? "analytics-mini-list" : "analytics-grid"}>
                 {allMetrics.map((m, i) => (
-                    <div key={i} className="analytics-item">
-                        <div className="analytics-label">{m.label}</div>
-                        <div className={`analytics-value ${m.isChange ? (m.val >= 0 ? 'change-positive' : 'change-negative') : ''}`}>
+                    <div key={i} className={isMini ? "card rail-card-mini" : "analytics-item"}>
+                        <div className="analytics-label" style={isMini ? { fontSize: '0.65rem' } : {}}>{m.label}</div>
+                        <div className={`analytics-value ${m.isChange ? (m.val >= 0 ? 'change-positive' : 'change-negative') : ''}`} style={isMini ? { fontSize: '0.9rem' } : {}}>
                             {m.value}
                         </div>
-                        {m.sub && <div className="analytics-sub">{m.sub}</div>}
+                        {m.sub && <div className="analytics-sub" style={isMini ? { fontSize: '0.6rem' } : {}}>{m.sub}</div>}
                     </div>
                 ))}
             </div>
-            {data && (
+            {!isMini && data && (
                 <div className="analytics-updated">
                     Last updated: {new Date(data.lastUpdated).toLocaleTimeString()}
                 </div>
@@ -113,3 +113,4 @@ export default function QuickAnalytics({ chainId, chainConfig }) {
         </section>
     );
 }
+

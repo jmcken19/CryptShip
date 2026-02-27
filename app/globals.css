@@ -1815,62 +1815,81 @@ input {
   filter: grayscale(1);
 }
 
-/* Chain Page 2-Column Layout */
+/* Chain Page 3-Column Expanded Layout */
 .chain-page-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--space-2xl);
+  gap: var(--space-xl);
   align-items: start;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 1200px) {
   .chain-page-grid {
-    grid-template-columns: 1fr 360px;
+    grid-template-columns: 240px 1fr 240px;
+    gap: var(--space-2xl);
   }
 }
 
-.market-panel-side {
+.chain-rail-left,
+.chain-rail-right {
   display: flex;
   flex-direction: column;
   gap: var(--space-xl);
 }
 
-@media (min-width: 1024px) {
-  .market-panel-side {
+@media (min-width: 1200px) {
+
+  .chain-rail-left,
+  .chain-rail-right {
     position: sticky;
     top: calc(var(--nav-height) + var(--space-xl));
     max-height: calc(100vh - var(--nav-height) - var(--space-2xl));
     overflow-y: auto;
-    padding-right: var(--space-sm);
+    padding-bottom: var(--space-xl);
   }
 
-  /* Custom scrollbar for sticky panel */
-  .market-panel-side::-webkit-scrollbar {
-    width: 4px;
+  /* Custom scrollbar for rails */
+  .chain-rail-left::-webkit-scrollbar,
+  .chain-rail-right::-webkit-scrollbar {
+    width: 3px;
   }
 
-  .market-panel-side::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  .market-panel-side::-webkit-scrollbar-thumb {
+  .chain-rail-left::-webkit-scrollbar-thumb,
+  .chain-rail-right::-webkit-scrollbar-thumb {
     background: var(--navy-700);
     border-radius: 4px;
   }
 }
 
-.chain-hero-min {
-  margin-bottom: var(--space-xl);
+.voyage-center-column {
+  min-width: 0;
+  /* Prevent overflow issues in grid */
 }
 
-.chain-hero-min h1 {
-  font-size: 2.5rem;
+/* Reduced prominence for side blocks */
+.rail-card-mini {
+  background: rgba(15, 23, 42, 0.4) !important;
+  border-color: var(--border-subtle) !important;
+}
+
+.chain-hero-header {
+  margin-bottom: var(--space-xl);
+  max-width: var(--content-max-width);
+}
+
+.chain-hero-header h1 {
+  font-size: 3rem;
   font-weight: 800;
   margin-bottom: var(--space-xs);
 }
 
-.chain-hero-min .chain-description {
+.chain-hero-header .chain-description {
   color: var(--text-muted);
-  font-size: 1rem;
-  max-width: 600px;
+  font-size: 1.1rem;
+  max-width: 800px;
+}
+
+.full-width-chart-container {
+  margin-bottom: var(--space-2xl);
+  width: 100%;
 }
