@@ -13,6 +13,7 @@ export default function VoyageRail({ chain, waypoints }) {
     const railRef = useRef(null);
     const completionRef = useRef(null);
     const hasAutoScrolledOnComplete = useRef(false);
+    const [expandedResources, setExpandedResources] = useState(new Set());
 
     // Provide a helper to load safely
     const loadProgress = useCallback(() => {
@@ -110,8 +111,32 @@ export default function VoyageRail({ chain, waypoints }) {
         setCompletedWaypoints({});
         setShowResetModal(false);
         hasAutoScrolledOnComplete.current = false;
+        setExpandedResources(new Set());
         scrollToWaypoint(1);
         setActiveWaypoint(1);
+    };
+
+    const toggleResources = (id) => {
+        setExpandedResources(prev => {
+            const next = new Set(prev);
+            if (next.has(id)) next.delete(id);
+            else next.add(id);
+            return next;
+        });
+    };
+
+    const trackResourceClick = (waypointId, resourceUrl, source) => {
+        try {
+            if (typeof window !== 'undefined') {
+                if (window.analytics && typeof window.analytics.track === 'function') {
+                    window.analytics.track('resource_click', { waypointId, resourceUrl, source });
+                } else if (typeof window.gtag === 'function') {
+                    window.gtag('event', 'resource_click', { waypointId, resourceUrl, source });
+                }
+            }
+        } catch (e) {
+            // safely default to no-op if tracking fails
+        }
     };
 
     // Device Preference
@@ -408,6 +433,35 @@ export default function VoyageRail({ chain, waypoints }) {
                                             </div>
                                         )}
                                     </div>
+
+                                    {wp.resources && wp.resources.length > 0 && (
+                                        <div className="waypoint-resources">
+                                            <div className="resources-header">Resources</div>
+                                            <ul className="resources-list">
+                                                {wp.resources.slice(0, expandedResources.has(wp.id) ? undefined : 2).map((res, i) => (
+                                                    <li key={i}>
+                                                        <a
+                                                            href={res.url}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            onClick={() => trackResourceClick(wp.id, res.url, res.source)}
+                                                        >
+                                                            {res.title}
+                                                        </a>
+                                                        <span className="resource-source">({res.source})</span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                            {wp.resources.length > 2 && (
+                                                <button
+                                                    className="btn-link-sm"
+                                                    onClick={() => toggleResources(wp.id)}
+                                                >
+                                                    {expandedResources.has(wp.id) ? 'Show less' : `Show ${wp.resources.length - 2} more`}
+                                                </button>
+                                            )}
+                                        </div>
+                                    )}
 
                                     <label className="waypoint-checkbox">
                                         <input

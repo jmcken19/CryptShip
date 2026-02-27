@@ -8,7 +8,7 @@ export default function Donate() {
     const donations = [
         { chain: 'SOL', color: '#9945FF', address: 'DmmG534DDnxirxBcXdLdKkjgeh8S9BXpsSMtcyzW8QrS' },
         { chain: 'ETH', color: '#627EEA', address: '0x59d48f1B003611Ef368f90B6dC6b8986194baCAe' },
-        { chain: 'BTC', color: '#F7931A', address: 'Bc1qyawdvrqrhf7060mwflglcpygtr7d94l9y3adhg' },
+        { chain: 'BTC', color: '#F7931A', address: '3JmjGUa74g3sNsDvi559Fh7FGrB37nbee5' },
     ];
 
     const handleCopy = (address, chain) => {

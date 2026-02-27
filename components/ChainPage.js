@@ -40,8 +40,7 @@ export default function ChainPage({ chainId }) {
             <section className="chain-hero-header">
                 <h1 style={{ color: chain.color }}>{chain.name} Wallet Voyage</h1>
                 <p className="chain-description">
-                    Follow the Sea Route to safely navigate the {chain.name} ecosystem.
-                    Complete all waypoints to set up and fund your wallet for on-chain trading.
+                    Follow the Sea Route to safely navigate {chain.name} and fund your first wallet.
                 </p>
 
                 <div className="chain-price-block" style={{ marginTop: '1rem' }}>

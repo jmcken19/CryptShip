@@ -75,13 +75,11 @@ export default function QuickAnalytics({ chainId, chainConfig, isMini = false, i
     const chainMetrics = [];
     if (chainId === 'sol') {
         chainMetrics.push(
-            { label: 'Fee Level', value: data?.feeLevel || '—', sub: data?.feeLevelValue },
             { label: 'Network Activity', value: data?.activity || '—' }
         );
     } else if (chainId === 'eth') {
         chainMetrics.push(
-            { label: 'Gas Price', value: data?.gasIndicator || '—', sub: data?.gasValue },
-            { label: 'Network Fee Level', value: data?.baseFee || '—' }
+            { label: 'Gas Price', value: data?.gasIndicator || '—', sub: data?.gasValue }
         );
     } else if (chainId === 'btc') {
         chainMetrics.push(

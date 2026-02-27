@@ -14,7 +14,7 @@ export function getWaypoints(chainId, devicePreference = 'both') {
             {
                 id: 1,
                 title: 'Create a Coinbase Account',
-                goal: 'Set up a trusted custodial platform as your starting point.',
+                goal: 'Set up Coinbase.',
                 commonBullets: [
                     'Visit coinbase.com to create a free account.',
                     'Complete identity verification (KYC).',
@@ -25,11 +25,14 @@ export function getWaypoints(chainId, devicePreference = 'both') {
                     all: 'https://coinbase.com/join/ZKU75L5?src=referral-link'
                 },
                 checkbox: 'I have created a Coinbase account.',
+                resources: [
+                    { title: 'Coinbase onboarding walkthrough', source: 'YouTube — Coinbase', url: 'https://www.youtube.com/watch?v=NqD7A9xKw7g' }
+                ],
             },
             {
                 id: 2,
                 title: 'Secure + Fund Coinbase',
-                goal: 'Enable 2FA and add a small starting balance.',
+                goal: 'Secure & fund account.',
                 commonBullets: [
                     'Enable 2FA using an authenticator app.',
                     'Deposit a small amount to learn with.',
@@ -41,7 +44,7 @@ export function getWaypoints(chainId, devicePreference = 'both') {
             {
                 id: 3,
                 title: 'Download Phantom',
-                goal: 'Install Phantom wallet — your self-custody tool.',
+                goal: 'Install Phantom wallet.',
                 commonBullets: [
                     'Secure your 12-word seed phrase on paper, never digitally.'
                 ],
@@ -59,11 +62,14 @@ export function getWaypoints(chainId, devicePreference = 'both') {
                     web: 'https://phantom.app/download'
                 },
                 checkbox: 'I have installed Phantom and secured my seed phrase offline.',
+                resources: [
+                    { title: 'Phantom wallet setup walkthrough', source: 'YouTube — Phantom', url: 'https://www.youtube.com/watch?v=pGuIHvq0G0A' }
+                ],
             },
             {
                 id: 4,
                 title: 'Find Your Address',
-                goal: `Locate your ${c} receive address in Phantom.`,
+                goal: `Find ${c} address.`,
                 commonBullets: [
                     `Tap "Receive" and select ${chainName}.`,
                     'Copy your address; never type it manually.',
@@ -75,7 +81,7 @@ export function getWaypoints(chainId, devicePreference = 'both') {
             {
                 id: 5,
                 title: 'First Safe Transaction',
-                goal: `Send a test amount of ${c} from Coinbase to Phantom.`,
+                goal: 'Send test transaction.',
                 commonBullets: [
                     'Always send a small test amount first.',
                     'Verify the network is correct for the transaction.',
@@ -87,7 +93,7 @@ export function getWaypoints(chainId, devicePreference = 'both') {
             {
                 id: 6,
                 title: 'Final Checklist',
-                goal: 'Confirm your foundation is complete and ready for trading.',
+                goal: 'Confirm readiness.',
                 commonBullets: [
                     'Coinbase account secured and funded.',
                     'Phantom installed with seed phrase offline.',
@@ -106,7 +112,7 @@ export function getWaypoints(chainId, devicePreference = 'both') {
             {
                 id: 1,
                 title: 'Setup Strategy',
-                goal: 'Understand how you will manage your ETH wallet.',
+                goal: 'Plan your setup.',
                 commonBullets: [
                     'Ethereum works seamlessly across devices.',
                     'Syncing mobile and web ensures availability.'
@@ -117,7 +123,7 @@ export function getWaypoints(chainId, devicePreference = 'both') {
             {
                 id: 2,
                 title: 'Download Phantom (ETH)',
-                goal: 'Install Phantom — your tool for sending and receiving ETH.',
+                goal: 'Install Phantom wallet.',
                 commonBullets: [
                     'Phantom supports Ethereum natively alongside Solana.'
                 ],
@@ -135,11 +141,14 @@ export function getWaypoints(chainId, devicePreference = 'both') {
                     web: 'https://phantom.app/download'
                 },
                 checkbox: 'I have installed Phantom for Ethereum.',
+                resources: [
+                    { title: 'Phantom wallet setup walkthrough', source: 'YouTube — Phantom', url: 'https://www.youtube.com/watch?v=pGuIHvq0G0A' }
+                ],
             },
             {
                 id: 3,
                 title: 'Create Wallet + Backup',
-                goal: 'Generate your private keys and secure them offline.',
+                goal: 'Secure your seed phrase.',
                 commonBullets: [
                     'Secure your 12-word seed phrase on paper, never digitally.',
                     'Do NOT take photos or screenshots of your seed phrase.',
@@ -151,7 +160,7 @@ export function getWaypoints(chainId, devicePreference = 'both') {
             {
                 id: 4,
                 title: 'Find Your ETH Address',
-                goal: 'Locate your public receive address in Phantom.',
+                goal: 'Find ETH address.',
                 commonBullets: [
                     'Tap "Receive" and select Ethereum to see your address.',
                     'Your ETH address starts with "0x...".',
@@ -163,9 +172,9 @@ export function getWaypoints(chainId, devicePreference = 'both') {
             {
                 id: 5,
                 title: 'Safely Fund Your Wallet',
-                goal: 'Transfer ETH to your address from a trusted platform.',
+                goal: 'Fund your wallet.',
                 commonBullets: [
-                    'Fund by sending ETH from a platform like Coinbase.',
+                    'Fund by sending ETH from a platform like Coinbase (YouTube — Coinbase).',
                     'Always double-check the network is set to Ethereum.'
                 ],
                 action: 'Fund your wallet from a platform like Coinbase.',
@@ -173,11 +182,14 @@ export function getWaypoints(chainId, devicePreference = 'both') {
                     all: 'https://coinbase.com/join/ZKU75L5?src=referral-link'
                 },
                 checkbox: 'I understand how to safely fund my wallet.',
+                resources: [
+                    { title: 'Coinbase onboarding walkthrough', source: 'YouTube — Coinbase', url: 'https://www.youtube.com/watch?v=NqD7A9xKw7g' }
+                ],
             },
             {
                 id: 6,
                 title: 'Safe Movement Habit',
-                goal: 'Develop the habit of test transfers and confirmations.',
+                goal: 'Practice test transfers.',
                 commonBullets: [
                     'Always send a small test amount first.',
                     'Wait for confirmation on the network.',
@@ -196,7 +208,7 @@ export function getWaypoints(chainId, devicePreference = 'both') {
             {
                 id: 1,
                 title: 'Trading Environment',
-                goal: 'Confirm your active BTC trading platform.',
+                goal: 'Confirm trading platform.',
                 commonBullets: [
                     'BTC trading works well on mobile and web.',
                     'CEX.IO offers access for easy trading.',
@@ -207,7 +219,7 @@ export function getWaypoints(chainId, devicePreference = 'both') {
             {
                 id: 2,
                 title: 'Buy BTC Initially (Coinbase)',
-                goal: 'Use a common US on-ramp to acquire BTC.',
+                goal: 'Buy initial BTC.',
                 commonBullets: [
                     'Coinbase is a high-security on-ramp for US buyers.',
                     'Link a bank account or card to buy BTC easily.',
@@ -217,11 +229,14 @@ export function getWaypoints(chainId, devicePreference = 'both') {
                     all: 'https://coinbase.com/join/ZKU75L5?src=referral-link'
                 },
                 checkbox: 'I have acquired initial BTC.',
+                resources: [
+                    { title: 'Coinbase onboarding walkthrough', source: 'YouTube — Coinbase', url: 'https://www.youtube.com/watch?v=NqD7A9xKw7g' }
+                ],
             },
             {
                 id: 3,
                 title: 'Trade BTC (CEX.IO)',
-                goal: 'Use CEX.IO for active Bitcoin trading.',
+                goal: 'Trade on CEX.IO.',
                 commonBullets: [
                     'CEX.IO is recommended for its trading features.',
                     'Keeps movements fast and low-fee on an exchange.'
@@ -238,11 +253,14 @@ export function getWaypoints(chainId, devicePreference = 'both') {
                     web: 'https://cex.io/'
                 },
                 checkbox: 'I have set up CEX.IO for trading.',
+                resources: [
+                    { title: 'Getting Started guide', source: 'CEX.IO Support', url: 'https://support.cex.io/en/articles/4383397-getting-started' }
+                ],
             },
             {
                 id: 4,
                 title: 'Security Foundations',
-                goal: 'Protect your exchange accounts from unauthorized access.',
+                goal: 'Secure exchange accounts.',
                 commonBullets: [
                     'Enable authenticator 2FA on all accounts.',
                     'Be alert for phishing or fake support messages.',
@@ -254,7 +272,7 @@ export function getWaypoints(chainId, devicePreference = 'both') {
             {
                 id: 5,
                 title: 'Concept: Self-Custody',
-                goal: 'Understand the concept of holding your own BTC.',
+                goal: 'Understand self-custody.',
                 commonBullets: [
                     'Withdrawing to your own address means full responsibility.',
                     'Self-custody is for long-term storage, not active trading.',
@@ -266,7 +284,7 @@ export function getWaypoints(chainId, devicePreference = 'both') {
             {
                 id: 6,
                 title: 'Safe Movement Checklist',
-                goal: 'Ensure your BTC transfers are verified and correct.',
+                goal: 'Verify BTC transfers.',
                 commonBullets: [
                     'Verify recipient addresses multiple times.',
                     'Execute a small test send for significant amounts.',
@@ -326,7 +344,8 @@ function filterStepsByPreference(steps, pref) {
             points: bullets,
             action: s.action,
             actionLink: actionLink,
-            checkbox: s.checkbox
+            checkbox: s.checkbox,
+            resources: s.resources
         };
     });
 }
