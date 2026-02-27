@@ -67,8 +67,8 @@ export default function DisclaimerPage() {
 
                 <h2>Contact</h2>
                 <p>
-                    For questions or concerns, reach out at{' '}
-                    <a href="mailto:contact@cryptship.com">contact@cryptship.com</a>.
+                    For questions or concerns, reach out to the developer on{' '}
+                    <a href="https://x.com/bigpotdev" target="_blank" rel="noopener noreferrer">X / Twitter</a>.
                 </p>
 
                 <p style={{ marginTop: '3rem', paddingTop: '1.5rem', borderTop: '1px solid rgba(45, 212, 191, 0.1)' }}>
