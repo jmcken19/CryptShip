@@ -29,7 +29,7 @@ export default function Donate() {
                 Support Cryptship
             </h2>
             <p className="text-muted mb-lg" style={{ fontSize: '0.9rem' }}>
-                Crypto-only donations go directly to the developer and support ongoing Cryptship development.
+                Crypto-only donations go directly to the developer and support ongoing Cryptship development as well as future projects.
             </p>
 
             <div className="donate-grid">
