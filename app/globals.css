@@ -267,7 +267,7 @@ input {
 .navbar-logo {
   font-size: 1.35rem;
   font-weight: 800;
-  background: linear-gradient(135deg, var(--teal-400), var(--gold-500));
+  background: linear-gradient(135deg, var(--white) 0%, var(--teal-300) 50%, var(--gold-400) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -1174,21 +1174,22 @@ input {
   position: absolute;
   left: 0;
   top: 0;
-  transform: translate(-50%, -50%);
+  transform: translate(calc(-50% - 20px), -50%);
   color: var(--gold-400);
   filter: drop-shadow(0 0 8px rgba(245, 166, 35, 0.4));
   animation: shipBob 3s ease-in-out infinite;
+  z-index: 20;
 }
 
 @keyframes shipBob {
 
   0%,
   100% {
-    transform: translate(-50%, -50%) rotate(0deg);
+    transform: translate(calc(-50% - 20px), -50%) rotate(0deg);
   }
 
   50% {
-    transform: translate(-50%, -53%) rotate(2deg);
+    transform: translate(calc(-50% - 20px), -53%) rotate(2deg);
   }
 }
 
@@ -1434,6 +1435,29 @@ input {
   padding: var(--space-4xl) var(--space-2xl);
   border-color: var(--teal-400);
   background: radial-gradient(circle at top, rgba(45, 212, 191, 0.1), transparent);
+  transition: all var(--transition-base);
+}
+
+@keyframes highlight-completion {
+  0% {
+    transform: scale(1);
+    box-shadow: var(--shadow-card);
+  }
+
+  50% {
+    transform: scale(1.02);
+    box-shadow: 0 0 30px rgba(45, 212, 191, 0.4);
+    border-color: var(--teal-300);
+  }
+
+  100% {
+    transform: scale(1);
+    box-shadow: var(--shadow-card);
+  }
+}
+
+.completion-highlight {
+  animation: highlight-completion 800ms ease-out;
 }
 
 .complete-icon {

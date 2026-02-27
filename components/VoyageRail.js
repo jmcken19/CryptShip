@@ -11,6 +11,8 @@ export default function VoyageRail({ chain, waypoints }) {
     const [showResetModal, setShowResetModal] = useState(false);
     const waypointRefs = useRef({});
     const railRef = useRef(null);
+    const completionRef = useRef(null);
+    const hasAutoScrolledOnComplete = useRef(false);
 
     // Provide a helper to load safely
     const loadProgress = useCallback(() => {
@@ -107,6 +109,7 @@ export default function VoyageRail({ chain, waypoints }) {
         localStorage.removeItem(`cryptship_progress_${chain}`);
         setCompletedWaypoints({});
         setShowResetModal(false);
+        hasAutoScrolledOnComplete.current = false;
         scrollToWaypoint(1);
         setActiveWaypoint(1);
     };
@@ -164,6 +167,26 @@ export default function VoyageRail({ chain, waypoints }) {
     }, [chain]);
 
     const isFullyComplete = Object.values(completedWaypoints).filter(Boolean).length === waypoints.length;
+
+    useEffect(() => {
+        if (isFullyComplete && !hasAutoScrolledOnComplete.current && completionRef.current) {
+            hasAutoScrolledOnComplete.current = true;
+
+            const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            completionRef.current.scrollIntoView({
+                behavior: prefersReducedMotion ? 'auto' : 'smooth',
+                block: 'start'
+            });
+
+            if (!prefersReducedMotion) {
+                completionRef.current.classList.add('completion-highlight');
+                setTimeout(() => {
+                    completionRef.current?.classList.remove('completion-highlight');
+                }, 800);
+            }
+        }
+    }, [isFullyComplete]);
 
     const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 
@@ -399,7 +422,7 @@ export default function VoyageRail({ chain, waypoints }) {
                         ))}
 
                         {isFullyComplete && (
-                            <div className="card voyage-complete-card">
+                            <div id="completion" ref={completionRef} className="card voyage-complete-card">
                                 <h3>Voyage Complete</h3>
                                 <p>You&apos;ve mastered the foundations of {chain.toUpperCase()} wallet trading.</p>
 

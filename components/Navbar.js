@@ -24,7 +24,7 @@ export default function Navbar() {
         <nav className="navbar" role="navigation" aria-label="Main navigation">
             <div className="navbar-inner">
                 <Link href="/" className="navbar-logo">
-                    ⚓ Cryptship
+                    Cryptship
                 </Link>
 
                 <button
