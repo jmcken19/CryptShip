@@ -36,7 +36,10 @@ export default function PriceChart({ coin, color }) {
                     setChartData(data.prices);
                 }
             })
-            .catch(console.error)
+            .catch((err) => {
+                // Intentionally swallowed: gracefully show "Chart data unavailable" text instead of breaking UI
+                console.error(err);
+            })
             .finally(() => setLoading(false));
     }, [coin, period]);
 

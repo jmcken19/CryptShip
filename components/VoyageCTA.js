@@ -18,6 +18,7 @@ export default function VoyageCTA() {
                     localProgress[c] = JSON.parse(stored);
                 }
             } catch (e) {
+                // Safely catch corrupted local data or SSR edge cases
                 console.error('Failed to parse localStorage for', c, e);
             }
         });

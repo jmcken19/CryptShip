@@ -10,7 +10,10 @@ export default function Headlines() {
         fetch('/api/news?scope=global')
             .then(r => r.ok ? r.json() : null)
             .then(d => { if (d) setData(d); })
-            .catch(console.error)
+            .catch((err) => {
+                // Intentionally swallowed: gracefully show nothing instead of breaking UI
+                console.error(err);
+            })
             .finally(() => setLoading(false));
     }, []);
 

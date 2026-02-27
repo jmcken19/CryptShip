@@ -14,7 +14,10 @@ export default function ChainHeadlines({ chainId, isMini = false }) {
                     setHeadlines(data.headlines);
                 }
             })
-            .catch(console.error)
+            .catch((err) => {
+                // Intentionally swallowed: gracefully show "No headlines available" string instead of breaking UI
+                console.error(err);
+            })
             .finally(() => setLoading(false));
     }, [chainId]);
 

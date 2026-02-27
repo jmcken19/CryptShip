@@ -36,6 +36,7 @@ export default function MarketSnapshot() {
             setErrorMsg('');
             setData(json);
         } catch (e) {
+            // Intentionally swallowed: gracefully show "Market data temporarily unavailable." text instead of breaking UI
             console.error('Market fetch request failed:', e);
             setErrorMsg('Market data temporarily unavailable.');
         } finally {

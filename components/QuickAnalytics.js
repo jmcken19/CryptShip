@@ -37,6 +37,7 @@ export default function QuickAnalytics({ chainId, chainConfig, isMini = false, i
                     setData(json[chainId]);
                 }
             } catch (e) {
+                // Intentionally swallowed: If API fails, UI remains in a clean state or relies on skeleton/fallback
                 console.error(e);
             } finally {
                 setLoading(false);

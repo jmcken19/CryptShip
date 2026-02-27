@@ -131,11 +131,8 @@ export async function GET(request) {
     const cacheKey = scope;
     const cached = newsCache.get(cacheKey);
     if (cached && (Date.now() - cached.timestamp) < CACHE_DURATION) {
-        console.log(`[DEBUG news] Serving ${scope} from cache, age: ${Math.round((Date.now() - cached.timestamp) / 1000)}s`);
         return NextResponse.json(cached.data);
     }
-
-    console.log(`[DEBUG news] Fetching fresh ${scope} RSS feeds at ${new Date().toISOString()}`);
 
     const targetUrls = FEEDS[scope] || FEEDS.global;
     const headlines = await fetchFeeds(targetUrls);

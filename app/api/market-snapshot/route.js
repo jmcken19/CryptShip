@@ -97,7 +97,6 @@ async function fetchMarketData() {
 
     // 1. Check valid cache
     if (cache.data && (now - cache.timestamp) < CACHE_DURATION) {
-        console.log('[DEBUG market-snapshot] Serving from cache (Provider:', cache.data.providerUsed, ') - Age:', Math.round((now - cache.timestamp) / 1000), 's');
         return cache.data;
     }
 
@@ -131,7 +130,6 @@ async function fetchMarketData() {
         }
 
         prices.providerUsed = 'coinbase' + (cgData ? ' + coingecko' : '');
-        console.log(`[DEBUG market-snapshot] Primary fetch success (${prices.providerUsed}) at`, new Date().toISOString());
 
         cache.data = prices;
         cache.timestamp = now;
@@ -153,7 +151,6 @@ async function fetchMarketData() {
             }
 
             fallbackPrices.providerUsed = 'coingecko';
-            console.log('[DEBUG market-snapshot] Fallback standalone fetch success (CoinGecko) at', new Date().toISOString());
 
             cache.data = fallbackPrices;
             cache.timestamp = now;
@@ -164,7 +161,6 @@ async function fetchMarketData() {
 
             // 5. Serve stale cache if available
             if (cache.data) {
-                console.log('[DEBUG market-snapshot] Both providers failed. Serving stale cached data.');
                 return cache.data;
             }
             throw new Error('All market data providers failed');

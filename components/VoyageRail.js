@@ -18,6 +18,7 @@ export default function VoyageRail({ chain, waypoints }) {
     // Provide a helper to load safely
     const loadProgress = useCallback(() => {
         try {
+            // Safely wrapped to prevent SSR hydration errors or corrupted local data crashes
             const raw = localStorage.getItem(`cryptship_progress_${chain}`);
             if (raw) {
                 const parsed = JSON.parse(raw);
