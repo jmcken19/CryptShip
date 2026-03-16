@@ -73,6 +73,8 @@ export async function GET(request) {
         const data = await res.json();
 
         let prices = data.prices;
+        let responseData = data;
+
         if (prices) {
             const now = Date.now();
             if (period === '1h') {
@@ -82,11 +84,12 @@ export async function GET(request) {
                 const cutoff = now - 6 * 60 * 60 * 1000;
                 prices = prices.filter(p => p[0] >= cutoff);
             }
-            data.prices = prices;
+            // Create a new object to avoid mutating the Next.js fetch cache
+            responseData = { ...data, prices };
         }
 
-        chartCache.set(cacheKey, { data, timestamp: Date.now() });
-        return NextResponse.json(data);
+        chartCache.set(cacheKey, { data: responseData, timestamp: Date.now() });
+        return NextResponse.json(responseData);
     } catch (error) {
         console.error('Chart data fetch error:', error.message);
         const fallback = { prices: generateFallbackData(period) };
